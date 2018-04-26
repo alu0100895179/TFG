@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@color/lightbg"
+    tools:context="proyectos.jaime.tfg.MainActivity">
+
+
+    <TextView
+        android:id="@+id/titleT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:text="Air Monitoring"
+        android:textAlignment="center"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textSize="52sp"
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="6">
+
+        <Button
+            android:id="@+id/airB"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/roundbutton"
+            android:clickable="true"
+            android:drawableTop="@drawable/iconcloud"
+            android:focusable="true"
+            android:fontFamily="sans-serif-condensed"
+            android:onClick="pulsado_boton_air"
+            android:padding="20dp"
+            android:text="Air"
+            android:textSize="18sp" />
+
+        <Space
+            android:layout_width="38dp"
+            android:layout_height="wrap_content"/>
+
+
+        <Button
+            android:id="@+id/landB"
+            android:background="@drawable/roundbutton"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:drawableTop="@drawable/iconmountain"
+            android:fontFamily="sans-serif-condensed"
+            android:onClick="pulsado_boton_land"
+            android:text="Land"
+            android:textSize="18sp"
+            android:clickable="true"
+            android:focusable="true"/>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/settingsB"
+        android:layout_width="220dp"
+        android:layout_height="30dp"
+        android:layout_weight="2"
+        android:background="@drawable/roundbutton"
+        android:clickable="true"
+        android:drawableStart="@drawable/iconsettings"
+        android:focusable="true"
+        android:fontFamily="sans-serif-condensed"
+        android:onClick="pulsado_boton_sett"
+        android:paddingStart="28dp"
+        android:text="Settings"
+        android:textSize="18sp" />
+
+</LinearLayout>
