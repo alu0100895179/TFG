@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    public static String stringName;
     private static final int MY_PERMISSION_ACCESS_CAMERA = 20;
     static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 10;
 
@@ -69,12 +71,6 @@ public class MainActivity extends AppCompatActivity {
     public void pulsado_boton_sett (View vista){
 
         vista.startAnimation(buttonClick);
-        Log.d("TFG_debug", "HOLI!");
-        setContentView(R.layout.ip_settings);
-
-        EventoTeclado teclado = new EventoTeclado();
-        EditText ip = (EditText) findViewById(R.id.editText);
-        ip.setOnEditorActionListener(teclado);
 
     }
 
@@ -110,24 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }break;
-        }
-    }
-
-    class EventoTeclado implements TextView.OnEditorActionListener {
-
-        @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            Log.d("TFG_debug", "AAAAA");
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                EditText ip = (EditText) findViewById(R.id.editText);
-                ipS = ip.getText().toString();
-                Log.d("TFG_debug", "IP: " + ipS);
-                InputMethodManager miteclado = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                miteclado.hideSoftInputFromWindow(ip.getWindowToken(), 0);
-                setContentView(R.layout.activity_main);
-                return true;
-            }
-            return false;
         }
     }
 }

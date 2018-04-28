@@ -31,7 +31,7 @@
 
     <uses-feature android:name="android.hardware.location.gps" />
 
-    <!-- PERMISOS GPS-->
+    <!-- PERMISOS ACELEROMETRO-->
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
 
     <application
