@@ -11,14 +11,23 @@ import android.widget.TextView;
 
 public class configActivity extends Activity {
 
-    String ipS = "";
+    public static String STREAM_URL = "rtsp://192.168.1.183:1935/live/android_test";
+    public static final String PUBLISHER_USERNAME = "alu0100895179";
+    public static final String PUBLISHER_PASSWORD = "jaime";
+
+    public static String ip = "192.168.1.183";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.d("TFG_debug", "configActivity");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ip_settings);
 
-        Log.d("TFG_debug", "configActivity");
+        EventoTeclado evTeclado = new EventoTeclado();
+        EditText ipT = (EditText) findViewById(R.id.editText);
+        ipT.setOnEditorActionListener(evTeclado);
     }
 
     class EventoTeclado implements TextView.OnEditorActionListener {
@@ -26,21 +35,21 @@ public class configActivity extends Activity {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-            Log.d("TFG_debug", "HOLI!");
-            setContentView(R.layout.ip_settings);
+            if (actionId == EditorInfo.IME_ACTION_DONE){
 
-            EventoTeclado teclado = new EventoTeclado();
-            EditText ip = (EditText) findViewById(R.id.editText);
-            ip.setOnEditorActionListener(teclado);
+                EditText ipT = (EditText) findViewById(R.id.editText);
+                String auxIP = (String) ipT.getText().toString();
+                if(auxIP!=""){
+                    ip=auxIP;
+                    STREAM_URL = "rtsp://" + ip + ":1935/live/android_test";
+                }
+                Log.d("TFG_debug", "IP: " + ip);
 
-            Log.d("TFG_debug", "AAAAA");
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                EditText ip = (EditText) findViewById(R.id.editText);
-                ipS = ip.getText().toString();
-                Log.d("TFG_debug", "IP: " + ipS);
                 InputMethodManager miteclado = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                miteclado.hideSoftInputFromWindow(ip.getWindowToken(), 0);
-                setContentView(R.layout.activity_main);
+                miteclado.hideSoftInputFromWindow(ipT.getWindowToken(), 0);
+
+                Log.d("TFG_debug", "Nos vamos!");
+                finish();
                 return true;
             }
             return false;

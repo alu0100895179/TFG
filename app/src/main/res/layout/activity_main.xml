@@ -68,16 +68,15 @@
 
     <Button
         android:id="@+id/settingsB"
-        android:layout_width="220dp"
-        android:layout_height="30dp"
-        android:layout_weight="2"
+        android:layout_height="95dp"
+        android:layout_width="215dp"
         android:background="@drawable/roundbutton"
         android:clickable="true"
         android:drawableStart="@drawable/iconsettings"
         android:focusable="true"
         android:fontFamily="sans-serif-condensed"
         android:onClick="pulsado_boton_sett"
-        android:paddingStart="28dp"
+        android:paddingStart="30dp"
         android:text="Settings"
         android:textSize="18sp" />
 

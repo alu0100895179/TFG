@@ -19,14 +19,10 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-
-    public static String stringName;
     private static final int MY_PERMISSION_ACCESS_CAMERA = 20;
     static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 10;
 
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.6F);
-
-    String ipS = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
     public void pulsado_boton_sett (View vista){
 
         vista.startAnimation(buttonClick);
+
+        Intent i = new Intent(this, configActivity.class);
+        startActivity(i);
 
     }
 

@@ -8,22 +8,13 @@ import net.majorkernelpanic.streaming.SessionBuilder;
 import net.majorkernelpanic.streaming.audio.AudioQuality;
 import net.majorkernelpanic.streaming.gl.SurfaceView;
 import net.majorkernelpanic.streaming.rtsp.RtspClient;
-import net.majorkernelpanic.streaming.video.VideoQuality;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Menu;
 import android.view.SurfaceHolder;
-import android.view.Window;
-import android.view.WindowManager;
 
 public class airActivity extends Activity implements RtspClient.Callback,Session.Callback,SurfaceHolder.Callback{
 
@@ -80,7 +71,7 @@ public class airActivity extends Activity implements RtspClient.Callback,Session
                 .setVideoEncoder(SessionBuilder.VIDEO_H264)
                 .setSurfaceView(mSurfaceView).setPreviewOrientation(0)
                 .setCallback(this).build();
-
+        //VIDEO_H264
         // Configures the RTSP client
         mClient = new RtspClient();
         mClient.setSession(mSession);
@@ -88,16 +79,24 @@ public class airActivity extends Activity implements RtspClient.Callback,Session
         mSurfaceView.setAspectRatioMode(SurfaceView.ASPECT_RATIO_PREVIEW);
 
         String ip, port, path;
+        ip = port = path = "";
 
         // We parse the URI written in the Editext
         Pattern uri = Pattern.compile("rtsp://(.+):(\\d+)/(.+)");
-        Matcher m = uri.matcher(AppConfig.STREAM_URL);
+        Matcher m = uri.matcher(configActivity.STREAM_URL);
+        Log.d("TFG_debug", "STREAM_URL: " + configActivity.STREAM_URL);
+        Log.d("TFG_debug", "USERNAME: " +  configActivity.PUBLISHER_USERNAME);
+        Log.d("TFG_debug", "PASSWORD: " +  configActivity.PUBLISHER_PASSWORD);
         boolean aux = m.find();
-        ip = m.group(1);
-        port = m.group(2);
-        path = m.group(3);
+        //if(aux) {
+            ip = m.group(1);
+            port = m.group(2);
+            path = m.group(3);
 
-        mClient.setCredentials(AppConfig.PUBLISHER_USERNAME, AppConfig.PUBLISHER_PASSWORD);
+            Log.d("TFG_debug", "FIND -> " + aux);
+        //}
+
+        mClient.setCredentials(configActivity.PUBLISHER_USERNAME,configActivity.PUBLISHER_PASSWORD);
         mClient.setServerAddress(ip, Integer.parseInt(port));
         mClient.setStreamPath("/" + path);
     }

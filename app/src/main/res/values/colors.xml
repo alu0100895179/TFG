@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="lightbg">#CEF6EC</color>
     <color name="greenBlue">#04B4AE</color>
+    <color name="greyDark">#585858</color>
     <!--<color name="colorPrimary">#3F51B5</color>-->
     <!--<color name="colorPrimaryDark">#303F9F</color>-->
 </resources>
