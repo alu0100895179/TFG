@@ -24,6 +24,6 @@
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
         android:ems="10"
-        android:hint="192.168.1.183"
+        android:hint="awsatlas.duckdns.org"
         android:inputType="phone" />
 </RelativeLayout>

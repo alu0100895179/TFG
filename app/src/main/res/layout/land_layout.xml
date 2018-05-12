@@ -131,20 +131,45 @@
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"/>
+                android:layout_weight="1"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/imgViewCompass"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/arrow" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
+                    <ImageView
+                        android:id="@+id/imgViewCompass"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/compass1" />
+
+                    <ImageView
+                        android:id="@+id/imgViewArrowBlack"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrowblack"/>
+
+                    <ImageView
+                        android:id="@+id/imgViewArrowBlue"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrowblue"/>
+
+                    <ImageView
+                        android:id="@+id/imgViewArrowRed"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrowred"/>
+
+                </FrameLayout>
                 <TextView
                     android:id="@+id/txtAngle"
                     android:layout_width="match_parent"

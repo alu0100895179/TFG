@@ -15,6 +15,12 @@ public class configActivity extends Activity {
     public static final String PUBLISHER_USERNAME = "alu0100895179";
     public static final String PUBLISHER_PASSWORD = "jaime";
 
+    /*public static String STREAM_URL = "rtsp://awsatlas.duckdns.org:1935/casus/";
+    public static final String PUBLISHER_USERNAME = "casus";
+    public static final String PUBLISHER_PASSWORD = "Casus_";
+
+    public static String ip = "awsatlas.duckdns.org";
+    */
     public static String ip = "192.168.1.183";
 
     @Override
@@ -42,6 +48,7 @@ public class configActivity extends Activity {
                 if(auxIP!=""){
                     ip=auxIP;
                     STREAM_URL = "rtsp://" + ip + ":1935/live/android_test";
+                    //STREAM_URL = "rtsp://" + ip + ":1935/casus";
                 }
                 Log.d("TFG_debug", "IP: " + ip);
 

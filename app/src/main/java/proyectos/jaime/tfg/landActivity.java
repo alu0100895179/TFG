@@ -25,12 +25,21 @@ import java.util.List;
 
 public class landActivity extends Activity implements SensorEventListener {
 
+    // ----------------------------------------------------------------------------------------
+
     // Views donde se cargaran los elementos del XML
     private TextView txtAngle;
     private ImageView imgCompass;
+    private ImageView imgCompassB;
+    private ImageView imgCompassR;
 
     // guarda el angulo (grado) actual del compass
     private float currentDegree = 0f;
+    private float currentDegreeB = 0f;
+    private float currentDegreeR = 0f;
+
+    double latitud_est = 28.459983;
+    double longitud_est = -16.274791;
 
     // El sensor manager del dispositivo
     private SensorManager mSensorManager;
@@ -47,6 +56,8 @@ public class landActivity extends Activity implements SensorEventListener {
     // Guarda los valores que cambián con las variaciones del sensor TYPE_MAGNETIC_FIELD
     float[] mGeomagnetic;
 
+    // ----------------------------------------------------------------------------------------
+
     DecimalFormat dec1 = new DecimalFormat("#.0");
     DecimalFormat dec2 = new DecimalFormat("#.00");
 
@@ -59,7 +70,9 @@ public class landActivity extends Activity implements SensorEventListener {
 
         // ----------------------------------------------------------------------------------------
         // Se guardan en variables los elementos del layout
-        imgCompass = (ImageView) findViewById(R.id.imgViewCompass);
+        imgCompass = (ImageView) findViewById(R.id.imgViewArrowBlack);
+        imgCompassB = (ImageView) findViewById(R.id.imgViewArrowBlue);
+        imgCompassR = (ImageView) findViewById(R.id.imgViewArrowRed);
         txtAngle = (TextView) findViewById(R.id.txtAngle);
 
         // Se inicializa los sensores del dispositivo android
@@ -210,6 +223,9 @@ public class landActivity extends Activity implements SensorEventListener {
         double speed = location.getSpeed();
         String prov = location.getProvider();
 
+        double vect_x = longitud_est - lon;
+        double vect_y = latitud_est - lat;
+
         Log.d("TFG_debug", "Lat: " + lat);
         Log.d("TFG_debug", "Long: " + lon);
         Log.d("TFG_debug", "Alt: " + alt);
@@ -256,5 +272,65 @@ public class landActivity extends Activity implements SensorEventListener {
                 aux = "";
         }
         provText.setText(aux);
+
+        // -
+
+        if(vect_x==0){
+            if(vect_y==0){
+                // 0 grados - estamos parados
+            }
+            else{
+                if (vect_y>0) {
+                    // 0 grados NORTE
+                }
+                else{
+                    // 180 grados SUR
+                }
+            }
+        }
+        else if(vect_y==0){
+            if (vect_x>0) {
+                // 90 grados ESTE
+            }
+            else{
+                // 180 grados OESTE
+            }
+        }l
+        else{
+            if(vect_x>0){
+                if(vect_y>0){
+                    //NE
+                }
+                else{
+                    //SE
+                }
+            }
+            else{
+                if(vect_y>0){
+                    //NO
+                }
+                else{
+                    //SO
+                }
+            }
+        }
+
+        /*
+        //txtAngle.setText("N: " + Float.toString(aux) + "º");
+        // se crea la animacion de la rottacion (se revierte el giro en grados, negativo)
+        RotateAnimation ra = new RotateAnimation(
+                currentDegree,
+                degree,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f);
+        // el tiempo durante el cual la animación se llevará a cabo
+        ra.setDuration(1000);
+        // establecer la animación después del final de la estado de reserva
+        ra.setFillAfter(true);
+        // Inicio de la animacion
+        imgCompass.startAnimation(ra);
+        currentDegree = -degree;
+        */
     }
 }
