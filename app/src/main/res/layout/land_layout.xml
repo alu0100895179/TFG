@@ -176,6 +176,12 @@
                     android:layout_height="wrap_content"
                     android:text="N: 0.0º"
                     android:textAlignment="center" />
+                <TextView
+                    android:id="@+id/txtAngleB"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="B: 0.0º"
+                    android:textAlignment="center" />
             </LinearLayout>
 
         </LinearLayout>

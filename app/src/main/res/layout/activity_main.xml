@@ -14,22 +14,23 @@
     <TextView
         android:id="@+id/titleT"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
+        android:layout_height="0dp"
         android:fontFamily="cursive"
         android:gravity="center"
         android:text="Air Monitoring"
         android:textAlignment="center"
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textSize="52sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:layout_weight="4"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_weight="6">
+        android:layout_weight="2">
+
 
         <Button
             android:id="@+id/airB"
@@ -43,12 +44,34 @@
             android:onClick="pulsado_boton_air"
             android:padding="20dp"
             android:text="Air"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <Space
-            android:layout_width="38dp"
+            android:layout_width="20dp"
             android:layout_height="wrap_content"/>
 
+        <Button
+            android:id="@+id/settingsB"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/roundbutton"
+            android:drawableTop="@drawable/iconsettings"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-condensed"
+            android:onClick="pulsado_boton_sett"
+            android:text="Settings"
+            android:textSize="16sp"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="2">
 
         <Button
             android:id="@+id/landB"
@@ -59,25 +82,25 @@
             android:fontFamily="sans-serif-condensed"
             android:onClick="pulsado_boton_land"
             android:text="Land"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:clickable="true"
             android:focusable="true"/>
 
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="wrap_content" />
 
+        <Button
+            android:id="@+id/pmaB"
+            android:background="@drawable/roundbutton"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:drawableTop="@drawable/pmaimg"
+            android:fontFamily="sans-serif-condensed"
+            android:text="PMA"
+            android:textSize="16sp"
+            android:clickable="true"
+            android:focusable="true"/>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/settingsB"
-        android:layout_height="95dp"
-        android:layout_width="215dp"
-        android:background="@drawable/roundbutton"
-        android:clickable="true"
-        android:drawableStart="@drawable/iconsettings"
-        android:focusable="true"
-        android:fontFamily="sans-serif-condensed"
-        android:onClick="pulsado_boton_sett"
-        android:paddingStart="30dp"
-        android:text="Settings"
-        android:textSize="18sp" />
 
 </LinearLayout>

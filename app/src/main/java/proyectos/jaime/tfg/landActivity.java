@@ -2,6 +2,9 @@ package proyectos.jaime.tfg;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -25,10 +29,15 @@ import java.util.List;
 
 public class landActivity extends Activity implements SensorEventListener {
 
+    boolean aux =false;
+    double vect_x ;
+    double vect_y;
+
     // ----------------------------------------------------------------------------------------
 
     // Views donde se cargaran los elementos del XML
     private TextView txtAngle;
+    private TextView txtAngleB;
     private ImageView imgCompass;
     private ImageView imgCompassB;
     private ImageView imgCompassR;
@@ -38,14 +47,19 @@ public class landActivity extends Activity implements SensorEventListener {
     private float currentDegreeB = 0f;
     private float currentDegreeR = 0f;
 
-    double latitud_est = 28.459983;
-    double longitud_est = -16.274791;
+    //double latitud_est = 28.459983;
+    //double longitud_est = -16.274791;
+
+    double latitud_est = 28.462292;
+    double longitud_est = -16.277440;
 
     // El sensor manager del dispositivo
     private SensorManager mSensorManager;
     // Los dos sensores que son necesarios porque TYPE_ORINETATION esta deprecated
     private Sensor accelerometer;
     private Sensor magnetometer;
+
+    float degreeB;
 
     // Los angulos del movimiento de la flecha que señala al norte
     float degree;
@@ -67,13 +81,17 @@ public class landActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.land_layout);
         Log.d("TFG_debug", "ACTIVIDAD LAND");
 
+        Button auxButton = (Button) findViewById(R.id.button);
+        getGPS(auxButton);
+
 
         // ----------------------------------------------------------------------------------------
         // Se guardan en variables los elementos del layout
-        imgCompass = (ImageView) findViewById(R.id.imgViewArrowBlack);
+        imgCompass = (ImageView) findViewById(R.id.imgViewCompass);
         imgCompassB = (ImageView) findViewById(R.id.imgViewArrowBlue);
         imgCompassR = (ImageView) findViewById(R.id.imgViewArrowRed);
         txtAngle = (TextView) findViewById(R.id.txtAngle);
+        txtAngleB = (TextView) findViewById(R.id.txtAngleB);
 
         // Se inicializa los sensores del dispositivo android
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -117,17 +135,24 @@ public class landActivity extends Activity implements SensorEventListener {
 
         if ((mGravity != null) && (mGeomagnetic != null)) {
             float RotationMatrix[] = new float[16];
-            boolean success = SensorManager.getRotationMatrix(RotationMatrix,                                                             null, mGravity, mGeomagnetic);
+            boolean success = SensorManager.getRotationMatrix(RotationMatrix, null, mGravity, mGeomagnetic);
             if (success) {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(RotationMatrix, orientation);
                 azimut = orientation[0] * (180 / (float) Math.PI);
-                if(azimut<0)
-                    azimut=360+azimut;
+                calcular_base();
+                degreeB = (degreeB - azimut)%360;
+                if (azimut < 0)
+                    azimut = 360 + azimut;
+                if (degreeB < 0)
+                    degreeB = 360 + degreeB;
+                aux = true;
             }
         }
         degree = azimut;
         txtAngle.setText("N: " + (int) degree + "º");
+        Log.d("TFG_debug", "currentDegree= "+currentDegree);
+        Log.d("TFG_debug", "degree= " + degree);
         //txtAngle.setText("N: " + Float.toString(aux) + "º");
         // se crea la animacion de la rottacion (se revierte el giro en grados, negativo)
         RotateAnimation ra = new RotateAnimation(
@@ -143,6 +168,23 @@ public class landActivity extends Activity implements SensorEventListener {
         // Inicio de la animacion
         imgCompass.startAnimation(ra);
         currentDegree = -degree;
+
+        if (aux){
+            Log.d("TFG_debug", "currentDegreeB= "+currentDegreeB);
+            Log.d("TFG_debug", "degreeB= " + degreeB);
+            txtAngleB.setText("B: " + (int) degreeB + "º");
+            RotateAnimation ra2 = new RotateAnimation(
+                    degreeB,
+                    degreeB,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f);
+            ra.setDuration(1000);
+            ra.setFillAfter(true);
+            imgCompassB.startAnimation(ra2);
+            currentDegreeB = -degreeB;
+            aux=false;
+        }
     }
 
     @Override
@@ -223,8 +265,8 @@ public class landActivity extends Activity implements SensorEventListener {
         double speed = location.getSpeed();
         String prov = location.getProvider();
 
-        double vect_x = longitud_est - lon;
-        double vect_y = latitud_est - lat;
+        vect_x = longitud_est - lon;
+        vect_y = latitud_est - lat;
 
         Log.d("TFG_debug", "Lat: " + lat);
         Log.d("TFG_debug", "Long: " + lon);
@@ -272,65 +314,55 @@ public class landActivity extends Activity implements SensorEventListener {
                 aux = "";
         }
         provText.setText(aux);
+    }
 
-        // -
+    private void calcular_base (){
 
-        if(vect_x==0){
-            if(vect_y==0){
+        if (vect_x == 0) {
+            if (vect_y == 0) {
+                Log.d("TFG_debug", "PARADOS");
                 // 0 grados - estamos parados
-            }
-            else{
-                if (vect_y>0) {
+            } else {
+                if (vect_y > 0) {
                     // 0 grados NORTE
-                }
-                else{
+                    Log.d("TFG_debug", "NORTE");
+                } else {
+                    degreeB = 180;
                     // 180 grados SUR
+                    Log.d("TFG_debug", "SUR");
                 }
             }
-        }
-        else if(vect_y==0){
-            if (vect_x>0) {
+        } else if (vect_y == 0) {
+            if (vect_x > 0) {
+                degreeB = 90;
                 // 90 grados ESTE
-            }
-            else{
+                Log.d("TFG_debug", "ESTE");
+            } else {
+                degreeB = 180;
                 // 180 grados OESTE
+                Log.d("TFG_debug", "OESTE");
             }
-        }l
-        else{
-            if(vect_x>0){
-                if(vect_y>0){
+        } else {
+            if (vect_x > 0) {
+                if (vect_y > 0) {
                     //NE
-                }
-                else{
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                } else {
                     //SE
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y/vect_x)));
+                    degreeB = 180 - degreeB;
                 }
-            }
-            else{
-                if(vect_y>0){
+            } else {
+                if (vect_y > 0) {
                     //NO
-                }
-                else{
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeB = 360 - degreeB;
+                } else {
                     //SO
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeB = 180 + degreeB;
                 }
             }
         }
-
-        /*
-        //txtAngle.setText("N: " + Float.toString(aux) + "º");
-        // se crea la animacion de la rottacion (se revierte el giro en grados, negativo)
-        RotateAnimation ra = new RotateAnimation(
-                currentDegree,
-                degree,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f);
-        // el tiempo durante el cual la animación se llevará a cabo
-        ra.setDuration(1000);
-        // establecer la animación después del final de la estado de reserva
-        ra.setFillAfter(true);
-        // Inicio de la animacion
-        imgCompass.startAnimation(ra);
-        currentDegree = -degree;
-        */
     }
 }
