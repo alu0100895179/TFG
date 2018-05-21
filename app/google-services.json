@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "824798584793-lvdrbh0dbfchds8qc97svuipl6d300vb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "proyectos.jaime.tfg",
+            "certificate_hash": "56fdc80e06e5f578ff893a37a4cd6359a7902e58"
+          }
+        },
+        {
           "client_id": "824798584793-7bfo4grr6r9vlmat8im7f91oif31a0t0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

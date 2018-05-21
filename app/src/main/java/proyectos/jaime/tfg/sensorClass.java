@@ -1,10 +1,7 @@
 package proyectos.jaime.tfg;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,35 +20,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class landActivity extends Activity implements SensorEventListener {
+import static android.content.Context.LOCATION_SERVICE;
+import static android.content.Context.SENSOR_SERVICE;
 
-    boolean aux = false;
-    double vect_x ;
-    double vect_y;
+public class sensorClass implements SensorEventListener {
 
-    // ----------------------------------------------------------------------------------------
+    private boolean aux = false;
+    private double vect_x ;
+    private double vect_y;
 
-    // Views donde se cargaran los elementos del XML
-    private TextView txtAngle;
-    private TextView txtAngleB;
-    private ImageView imgCompass;
-    private ImageView imgCompassB;
-    private ImageView imgCompassR;
+    //private latitud_est = 28.459983;
+    //private double longitud_est = -16.274791;
+
+    private double latitud_est = 28.462292;
+    private double longitud_est = -16.277440;
 
     // guarda el angulo (grado) actual del compass
     private float currentDegree = 0f;
     private float currentDegreeB = 0f;
     private float currentDegreeR = 0f;
-
-    //double latitud_est = 28.459983;
-    //double longitud_est = -16.274791;
-
-    double latitud_est = 28.462292;
-    double longitud_est = -16.277440;
 
     // El sensor manager del dispositivo
     private SensorManager mSensorManager;
@@ -70,55 +64,24 @@ public class landActivity extends Activity implements SensorEventListener {
     // Guarda los valores que cambián con las variaciones del sensor TYPE_MAGNETIC_FIELD
     float[] mGeomagnetic;
 
-    // ----------------------------------------------------------------------------------------
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     DecimalFormat dec1 = new DecimalFormat("#.0");
     DecimalFormat dec2 = new DecimalFormat("#.00");
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.land_layout);
-        Log.d("TFG_debug", "ACTIVIDAD LAND");
+    public void main(Context mContext) {
 
-        Button auxButton = (Button) findViewById(R.id.button);
-        getGPS(auxButton);
+        Log.d("TFG_debug", "CLASE SENSORES!");
 
-
-        // ----------------------------------------------------------------------------------------
-        // Se guardan en variables los elementos del layout
-        imgCompass = (ImageView) findViewById(R.id.imgViewCompass);
-        imgCompassB = (ImageView) findViewById(R.id.imgViewArrowBlue);
-        imgCompassR = (ImageView) findViewById(R.id.imgViewArrowRed);
-        txtAngle = (TextView) findViewById(R.id.txtAngle);
-        txtAngleB = (TextView) findViewById(R.id.txtAngleB);
+        getGPS(mContext);
 
         // Se inicializa los sensores del dispositivo android
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensorManager = (SensorManager) mContext.getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         mGravity = null;
         mGeomagnetic = null;
-        // ----------------------------------------------------------------------------------------
-    }
-
-    // --------------------------------------------------------------------------------------------
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // Se registra un listener para los sensores del accelerometer y el             magnetometer
-        mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Se detiene el listener para no malgastar la bateria
-        mSensorManager.unregisterListener(this);
     }
 
     public void onSensorChanged(SensorEvent event) {
@@ -146,43 +109,32 @@ public class landActivity extends Activity implements SensorEventListener {
                     azimut = 360 + azimut;
                 if (degreeB < 0)
                     degreeB = 360 + degreeB;
-                aux = true;
+                aux=true;
             }
         }
         degree = azimut;
-        txtAngle.setText("N: " + (int) degree + "º");
+
+        DatabaseReference degreeRef = database.getReference("brujula/degree");
+        DatabaseReference currentDegreeRef = database.getReference("brujula/currentDegree");
+        DatabaseReference degreeBRef = database.getReference("brujula/degreeB");
+        DatabaseReference currentDegreeBRef = database.getReference("brujula/currentDegreeB");
+        degreeRef.setValue(degree);
+
         Log.d("TFG_debug", "currentDegree= "+currentDegree);
         Log.d("TFG_debug", "degree= " + degree);
-        //txtAngle.setText("N: " + Float.toString(aux) + "º");
-        // se crea la animacion de la rottacion (se revierte el giro en grados, negativo)
-        RotateAnimation ra = new RotateAnimation(
-                currentDegree,
-                degree,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f);
-        // el tiempo durante el cual la animación se llevará a cabo
-        ra.setDuration(1000);
-        // establecer la animación después del final de la estado de reserva
-        ra.setFillAfter(true);
-        // Inicio de la animacion
-        imgCompass.startAnimation(ra);
         currentDegree = -degree;
+
+        currentDegreeRef.setValue(currentDegree);
 
         if (aux){
             Log.d("TFG_debug", "currentDegreeB= "+currentDegreeB);
             Log.d("TFG_debug", "degreeB= " + degreeB);
-            txtAngleB.setText("B: " + (int) degreeB + "º");
-            RotateAnimation ra2 = new RotateAnimation(
-                    degreeB,
-                    degreeB,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f);
-            ra.setDuration(1000);
-            ra.setFillAfter(true);
-            imgCompassB.startAnimation(ra2);
+
+            degreeBRef.setValue(degreeB);
+            currentDegreeBRef.setValue(currentDegreeB);
+            //GIRAR
             currentDegreeB = -degreeB;
+            currentDegreeBRef.setValue(currentDegreeB);
             aux=false;
         }
     }
@@ -192,30 +144,15 @@ public class landActivity extends Activity implements SensorEventListener {
 
     }
 
-    // --------------------------------------------------------------------------------------------
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void getStreaming (View vista){
-
-        VideoView videoRec= (VideoView) findViewById(R.id.videoReceiver);
-        videoRec.setVisibility(View.VISIBLE);
-
-        String viewSource = configActivity.STREAM_URL;
-        Log.d("TFG_debug", "Intentado conectar a: " + configActivity.STREAM_URL);
-        videoRec.setVideoURI(Uri.parse(viewSource));
-        //videoRec.setMediaController(new MediaController(this));
-        //videoRec.requestFocus();
-        //try{
-        videoRec.start();
-        //}catch()
-    }
-
-    public void getGPS(View vista){
+    private void getGPS(Context mContext){
 
         Log.d("TFG_debug", "Función getGPS");
         LocationManager locationManager = null;
         List<String> providers = new ArrayList<String>();
         try {
-            locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+            locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
             providers = locationManager.getProviders(false);
         }
         catch (java.lang.NullPointerException e){
@@ -225,13 +162,13 @@ public class landActivity extends Activity implements SensorEventListener {
 
         Log.d("TFG_debug", "Procedemos a obtener localización");
         for (String provider : providers) {
-            Location aux =null;
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                aux = locationManager.getLastKnownLocation(provider);
-            Log.d("TFG_debug", "Provider: " + provider + " => " + aux);
-            if (aux != null) {
-                if (bestLocation == null || aux.getAccuracy() < bestLocation.getAccuracy()) {
-                    bestLocation = aux;
+            Location aux_loc =null;
+            if (ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                aux_loc = locationManager.getLastKnownLocation(provider);
+            Log.d("TFG_debug", "Provider: " + provider + " => " + aux_loc);
+            if (aux_loc != null) {
+                if (bestLocation == null || aux_loc.getAccuracy() < bestLocation.getAccuracy()) {
+                    bestLocation = aux_loc;
                 }
             }
         }
@@ -247,14 +184,6 @@ public class landActivity extends Activity implements SensorEventListener {
 
         Log.d("TFG_debug", "updateWithNewLocation");
 
-        TextView latText, lonText, altText, provText, bearingText, speedText;
-        latText = (TextView) findViewById(R.id.latitudeV);
-        lonText = (TextView) findViewById(R.id.longitudeV);
-        altText = (TextView) findViewById(R.id.altitudeV);
-        provText = (TextView) findViewById(R.id.provV);
-        bearingText = (TextView) findViewById(R.id.bearingV);
-        speedText = (TextView) findViewById(R.id.speedV);
-
         String latitudeS = "";
         String longitudeS = "";
 
@@ -262,8 +191,19 @@ public class landActivity extends Activity implements SensorEventListener {
         double lon = location.getLongitude();
         double alt = location.getAltitude();
         double bearing = location.getBearing();
-        double speed = location.getSpeed();
         String prov = location.getProvider();
+
+        DatabaseReference latRef = database.getReference("GPS/lat");
+        DatabaseReference lonRef = database.getReference("GPS/lon");
+        DatabaseReference altRef = database.getReference("GPS/alt");
+        DatabaseReference bearingRef = database.getReference("GPS/bearing");
+        DatabaseReference provRef = database.getReference("GPS/prov");
+
+        latRef.setValue(lat);
+        lonRef.setValue(lon);
+        altRef.setValue(alt);
+        bearingRef.setValue(bearingRef);
+        provRef.setValue(prov);
 
         vect_x = longitud_est - lon;
         vect_y = latitud_est - lat;
@@ -272,48 +212,8 @@ public class landActivity extends Activity implements SensorEventListener {
         Log.d("TFG_debug", "Long: " + lon);
         Log.d("TFG_debug", "Alt: " + alt);
         Log.d("TFG_debug", "Prov: " + prov);
-        Log.d("TFG_debug", "Speed: " + speed);
         Log.d("TFG_debug", "Bear: " + bearing);
 
-        int latINT = (int) lat;
-        latitudeS += latINT + "º";
-        lat = (lat-latINT)*60;
-        latINT = (int) lat;
-        latitudeS += latINT + "'";
-        lat = (lat-latINT)*60;
-        latINT = (int) lat;
-        latitudeS += latINT + "''";
-
-        int lonINT = (int) lon;
-        longitudeS += lonINT + "º";
-        lon = (lon-lonINT)*60;
-        lonINT = (int) lon;
-        longitudeS += lonINT + "'";
-        lon = (lon-lonINT)*60;
-        lonINT = (int) lon;
-        longitudeS += lonINT + "''";
-
-        latText.setText(latitudeS);
-        lonText.setText(longitudeS);
-        altText.setText(dec2.format(alt) + "m");
-        bearingText.setText(""+ dec2.format(bearing));
-        speedText.setText("" + dec2.format(speed));
-
-        String aux;
-        switch (prov) {
-            case "network":
-                aux = "NET";
-                break;
-            case "gps":
-                aux = "GPS";
-                break;
-            case "pasive":
-                aux = "PAS";
-                break;
-            default:
-                aux = "";
-        }
-        provText.setText(aux);
     }
 
     private void calcular_base (){
@@ -366,3 +266,22 @@ public class landActivity extends Activity implements SensorEventListener {
         }
     }
 }
+
+    /*
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Se registra un listener para los sensores del accelerometer y el             magnetometer
+        mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Se detiene el listener para no malgastar la bateria
+        mSensorManager.unregisterListener(this);
+    }
+    */
