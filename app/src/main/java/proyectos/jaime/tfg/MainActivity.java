@@ -9,21 +9,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSION_ACCESS_CAMERA = 20;
-    static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 10;
+    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 10;
 
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.6F);
 
@@ -45,12 +37,10 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
 
-            Intent i = new Intent(this, landActivity.class);
+            Intent i = new Intent(this, LandActivity.class);
             startActivity(i);
 
         }
-
-
     }
 
     public void pulsado_boton_air (View vista){
@@ -62,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions( this, new String[] {android.Manifest.permission.CAMERA}, MY_PERMISSION_ACCESS_CAMERA);
         }
         else {
-            Intent i = new Intent(this, airActivity.class);
+            Intent i = new Intent(this, AirActivity.class);
             startActivity(i);
         }
     }
@@ -71,7 +61,16 @@ public class MainActivity extends AppCompatActivity {
 
         vista.startAnimation(buttonClick);
 
-        Intent i = new Intent(this, configActivity.class);
+        Intent i = new Intent(this, ConfigActivity.class);
+        startActivity(i);
+
+    }
+
+    public void pulsado_boton_acp (View vista){
+
+        vista.startAnimation(buttonClick);
+
+        Intent i = new Intent(this, AcpActivity.class);
         startActivity(i);
 
     }

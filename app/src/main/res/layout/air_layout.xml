@@ -6,8 +6,8 @@ android:layout_height="match_parent"
 android:layout_alignParentTop="true"
 android:layout_alignParentStart="true"
 android:background="@android:color/black"
-android:keepScreenOn="true">
-<!--android:layout_alignParentLeft="true"-->
+android:keepScreenOn="true"
+android:padding="5dp">
 
     <net.majorkernelpanic.streaming.gl.SurfaceView
         android:id="@+id/surface"
@@ -15,5 +15,38 @@ android:keepScreenOn="true">
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:visibility="invisible"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/record_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• VIDEO"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/gps_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• GPS"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/compass_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• COMPASS"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </FrameLayout>

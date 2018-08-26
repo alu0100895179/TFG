@@ -97,7 +97,8 @@
             android:layout_height="150dp"
             android:drawableTop="@drawable/pmaimg"
             android:fontFamily="sans-serif-condensed"
-            android:text="PMA"
+            android:onClick="pulsado_boton_acp"
+            android:text="ACP"
             android:textSize="16sp"
             android:clickable="true"
             android:focusable="true"/>

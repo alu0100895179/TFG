@@ -3,6 +3,7 @@ package proyectos.jaime.tfg;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import net.majorkernelpanic.streaming.Session;
@@ -14,6 +15,8 @@ import net.majorkernelpanic.streaming.video.VideoQuality;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static proyectos.jaime.tfg.AirActivity.streamOk;
 
 public class StreamingClass implements RtspClient.Callback, Session.Callback, SurfaceHolder.Callback {
 
@@ -50,7 +53,8 @@ public class StreamingClass implements RtspClient.Callback, Session.Callback, Su
                 .setAudioEncoder(SessionBuilder.AUDIO_NONE)
                 .setAudioQuality(new AudioQuality(8000, 16000))
                 .setVideoEncoder(SessionBuilder.VIDEO_H264)
-                .setVideoQuality(new VideoQuality(176,144,20,500000))
+                //.setVideoQuality(new VideoQuality(176,144,20,500000))
+                .setVideoQuality(new VideoQuality(320, 240, 20, 500000))
                 .setSurfaceView(mSurfaceView)
                 .setPreviewOrientation(0)
                 .setCallback(this)
@@ -69,13 +73,12 @@ public class StreamingClass implements RtspClient.Callback, Session.Callback, Su
     }
 
     public void toggleStreaming() {
+
         if(!mClient.isStreaming()) {
             // Update the server url, username and password before starting the streaming
             setServerData();
-
             mSession.startPreview();
             mClient.startStream();
-
         } else {
             mSession.stopPreview();
             mClient.stopStream();
@@ -86,63 +89,66 @@ public class StreamingClass implements RtspClient.Callback, Session.Callback, Su
     private void setServerData() {
         // Parse the URI
         Pattern uri = Pattern.compile("rtsp://(.+):(\\d+)/(.+)");
-        Matcher m = uri.matcher(configActivity.STREAM_URL);
+        Matcher m = uri.matcher(ConfigActivity.STREAM_URL);
         m.find();
         ip = m.group(1);
         port = m.group(2);
         path = m.group(3);
 
-        mClient.setCredentials(configActivity.PUBLISHER_USERNAME, configActivity.PUBLISHER_PASSWORD);
+        mClient.setCredentials(ConfigActivity.PUBLISHER_USERNAME, ConfigActivity.PUBLISHER_PASSWORD);
         mClient.setServerAddress(ip, Integer.parseInt(port));
         mClient.setStreamPath("/" + path);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
+        Log.d("TFG_debug", "surfaceCreated");
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
+        Log.d("TFG_debug", "surfaceChanged");
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
+        Log.d("TFG_debug", "surfaceDestroyed");
     }
 
     @Override
     public void onRtspUpdate(int message, Exception exception) {
-
+        Log.d("TFG_debug", "onRtspUpdate");
     }
 
     @Override
     public void onBitrateUpdate(long bitrate) {
-
+        //Log.d("TFG_debug", "onBitrateUpdate");
     }
 
     @Override
     public void onSessionError(int reason, int streamType, Exception e) {
-
+        Log.d("TFG_debug", "onSessionError");
     }
 
     @Override
     public void onPreviewStarted() {
+        Log.d("TFG_debug", "onPreviewStarted");
     }
 
     @Override
     public void onSessionConfigured() {
-
+        Log.d("TFG_debug", "onSessionConfigured");
     }
 
     @Override
     public void onSessionStarted() {
-
+        Log.d("TFG_debug", "onSessionStarted");
+        streamOk=1;
     }
 
     @Override
     public void onSessionStopped() {
-
+        Log.d("TFG_debug", "onSessionStopped");
+        streamOk=-1;
     }
 }
