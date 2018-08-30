@@ -12,7 +12,9 @@ import android.widget.TextView;
 public class ConfigActivity extends Activity {
 
     //public static String STREAM_URL = "rtsp://awsatlas.duckdns.org:1935/casus/android";
-    public static String STREAM_URL = "rtsp://192.168.1.34:1935/casus/android_test";
+    public static String STREAM_URL_AIR = "rtsp://192.168.1.34:1935/casus/android_air";
+    public static String STREAM_URL_LAND = "rtsp://192.168.1.34:1935/casus/android_land";
+
 
     public static final String PUBLISHER_USERNAME = "casus";
     public static final String PUBLISHER_PASSWORD = "Casus_";
@@ -44,7 +46,8 @@ public class ConfigActivity extends Activity {
                 String auxIP = (String) ipT.getText().toString();
                 if(auxIP!=""){
                     ip=auxIP;
-                    STREAM_URL = "rtsp://" + ip + ":1935/casus/android_test";
+                    STREAM_URL_AIR = "rtsp://" + ip + ":1935/casus/android_air";
+                    STREAM_URL_LAND = "rtsp://" + ip + ":1935/casus/android_land";
                 }
                 Log.d("TFG_debug", "IP: " + ip);
 

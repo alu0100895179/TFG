@@ -16,8 +16,6 @@ import net.majorkernelpanic.streaming.video.VideoQuality;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static proyectos.jaime.tfg.AirActivity.streamOk;
-
 public class StreamingClass implements RtspClient.Callback, Session.Callback, SurfaceHolder.Callback {
 
     private Context mContext;
@@ -32,7 +30,11 @@ public class StreamingClass implements RtspClient.Callback, Session.Callback, Su
 
     private String firebaseKey;
 
-    public StreamingClass(Context context, SurfaceView surfaceView) {
+    int tipo = 0;
+    public static int streamOk = -1;
+
+    public StreamingClass(Context context, SurfaceView surfaceView,int tipo_aux) {
+        tipo=tipo_aux;
         mContext = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
@@ -89,7 +91,13 @@ public class StreamingClass implements RtspClient.Callback, Session.Callback, Su
     private void setServerData() {
         // Parse the URI
         Pattern uri = Pattern.compile("rtsp://(.+):(\\d+)/(.+)");
-        Matcher m = uri.matcher(ConfigActivity.STREAM_URL);
+        Matcher m;
+
+        if(tipo==0)
+            m = uri.matcher(ConfigActivity.STREAM_URL_AIR);
+        else
+           m = uri.matcher(ConfigActivity.STREAM_URL_LAND);
+
         m.find();
         ip = m.group(1);
         port = m.group(2);

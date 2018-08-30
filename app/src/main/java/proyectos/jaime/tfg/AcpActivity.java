@@ -1,15 +1,17 @@
 package proyectos.jaime.tfg;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,44 +27,34 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-
 import java.text.DecimalFormat;
-
 
 public class AcpActivity  extends Activity implements  OnMapReadyCallback{
 
-    static double alt;
-    static double lat;
-    static double lon;
-    static double bearing;
-    static double speed;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    int idNoti = 0;
 
-    static double lonBase;
-    static double latBase;
+    static double alt, lat, lon, bearing, speed;
+    static double lonBase, latBase;
 
     DecimalFormat dec1 = new DecimalFormat("#.0");
     DecimalFormat dec2 = new DecimalFormat("#.00");
 
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.6F);
 
+    MapFragment mapFragment;
     GoogleMap mMap;
+    VideoView mVideoView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("TFG_debug", "ACTIVIDAD PMA");
         setContentView(R.layout.acp_layout);
-        Log.d("TFG_debug", "PINTADA");
+        Log.d("TFG_debug", "ACTIVIDAD PMA");
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mapFragment.getView().setVisibility(View.INVISIBLE);
 
         final TextView latText, lonText, altText, provText, bearingText, speedText;
         latText = (TextView) findViewById(R.id.latitudeV);
@@ -77,8 +69,6 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
         final ImageView imgCompassR = findViewById(R.id.imgViewArrowRed);
         final TextView txtAngle = findViewById(R.id.txtAngle);
         final TextView txtAngleB = findViewById(R.id.txtAngleB);
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         DatabaseReference droneRef = database.getReference("GPS/drone");
         droneRef.addValueEventListener(new ValueEventListener() {
@@ -208,10 +198,77 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
         Log.d("TFG_debug", "END CREATE");
     }
 
+    public void pulsado_boton_notification (View vista){
+
+        vista.startAnimation(buttonClick);
+        idNoti++;
+        database.getReference("notification").setValue(idNoti);
+
+    }
+
     public void pulsado_boton_maps (View vista){
 
         vista.startAnimation(buttonClick);
+
+        VideoView view = findViewById(R.id.videoReceiver);
+        view.setVisibility(View.GONE);
+        mapFragment.getView().setVisibility(View.VISIBLE);
         onMapReady(mMap);
+
+    }
+
+    public void pulsado_boton_drone (View vista){
+
+        vista.startAnimation(buttonClick);
+
+        mapFragment.getView().setVisibility(View.INVISIBLE);
+        VideoView view = findViewById(R.id.videoReceiver);
+        view.setVisibility(View.VISIBLE);
+
+        String path2 = "rtsp://192.168.1.34:1935/casus/android_air";
+        Uri video = Uri.parse(path2);
+        Log.d("TFG_debug", "PRE1: Recibiendo Streaming");
+        mVideoView = (VideoView)this.findViewById(R.id.videoReceiver);
+        Log.d("TFG_debug", "PRE2: Recibiendo Streaming");
+        mVideoView.setVideoURI(video);
+        Log.d("TFG_debug", "PRE3: Recibiendo Streaming");
+        mVideoView.setMediaController(new MediaController(this));
+        Log.d("TFG_debug", "PRE4: Recibiendo Streaming");
+        mVideoView.requestFocus();
+        Log.d("TFG_debug", "PRE5: Recibiendo Streaming");
+        mVideoView.postInvalidateDelayed(100);
+        Log.d("TFG_debug", "PRE6: Recibiendo Streaming");
+        mVideoView.start();
+
+        Log.d("TFG_debug", "Recibiendo Streaming");
+
+    }
+
+    public void pulsado_boton_man (View vista){
+
+        vista.startAnimation(buttonClick);
+
+        mapFragment.getView().setVisibility(View.INVISIBLE);
+        VideoView view = findViewById(R.id.videoReceiver);
+        view.setVisibility(View.VISIBLE);
+
+        String path2 = "rtsp://192.168.1.34:1935/casus/android_land";
+        Uri video = Uri.parse(path2);
+        Log.d("TFG_debug", "PRE1: Recibiendo Streaming");
+        mVideoView = (VideoView)this.findViewById(R.id.videoReceiver);
+        Log.d("TFG_debug", "PRE2: Recibiendo Streaming");
+        mVideoView.setVideoURI(video);
+        Log.d("TFG_debug", "PRE3: Recibiendo Streaming");
+        mVideoView.setMediaController(new MediaController(this));
+        Log.d("TFG_debug", "PRE4: Recibiendo Streaming");
+        mVideoView.requestFocus();
+        Log.d("TFG_debug", "PRE5: Recibiendo Streaming");
+        mVideoView.postInvalidateDelayed(100);
+        Log.d("TFG_debug", "PRE6: Recibiendo Streaming");
+        mVideoView.start();
+
+        Log.d("TFG_debug", "Recibiendo Streaming");
+
     }
 
     @Override

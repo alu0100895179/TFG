@@ -30,13 +30,15 @@ public class MainActivity extends AppCompatActivity {
     public void pulsado_boton_land (View vista){
 
         vista.startAnimation(buttonClick);
+        Log.d("TFG_debug", "ANIMACION SUPERADA");
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
+            Log.d("TFG_debug", "IF");
         }
         else {
-
+            Log.d("TFG_debug", "ELSE");
             Intent i = new Intent(this, LandActivity.class);
             startActivity(i);
 
@@ -52,8 +54,14 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions( this, new String[] {android.Manifest.permission.CAMERA}, MY_PERMISSION_ACCESS_CAMERA);
         }
         else {
-            Intent i = new Intent(this, AirActivity.class);
-            startActivity(i);
+
+            if(ContextCompat.checkSelfPermission( this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions( this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
+            }
+            else {
+                Intent i = new Intent(this, AirActivity.class);
+                startActivity(i);
+            }
         }
     }
 
@@ -82,13 +90,9 @@ public class MainActivity extends AppCompatActivity {
 
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    Log.d("TFG_debug", "PERMISO ACEPTADO!");
-
-
                 } else {
 
-                    Log.d("TFG_debug", "PERMISO DENEGADO!");
+                    Log.d("TFG_debug", "PERMISO DENEGADO: Cámara.");
 
                 }
             } break;
@@ -98,13 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-
-                    Log.d("TFG_debug", "PERMISO ACEPTADO!");
-
                 } else {
-
-                    Log.d("TFG_debug", "PERMISO DENEGADO!");
-
+                    Log.d("TFG_debug", "PERMISO DENEGADO: Ubicación.");
                 }
             }break;
         }

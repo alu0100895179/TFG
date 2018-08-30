@@ -1,101 +1,119 @@
 package proyectos.jaime.tfg;
 
 import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationManager;
-import android.net.Uri;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.VideoView;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class LandActivity extends Activity implements SensorEventListener {
+import net.majorkernelpanic.streaming.gl.SurfaceView;
+import static proyectos.jaime.tfg.StreamingClass.streamOk;
 
-    boolean aux = false;
-    double vect_x ;
-    double vect_y;
+public class LandActivity extends Activity {
 
-    // ----------------------------------------------------------------------------------------
-
-    // Views donde se cargaran los elementos del XML
-    private TextView txtAngle;
-    private TextView txtAngleB;
-    private ImageView imgCompass;
-    private ImageView imgCompassB;
-    private ImageView imgCompassR;
-
-    // guarda el angulo (grado) actual del compass
-    private float currentDegree = 0f;
-    private float currentDegreeB = 0f;
-    private float currentDegreeR = 0f;
-
-    //double latitud_est = 28.459983;
-    //double longitud_est = -16.274791;
-
-    double latitud_est = 28.462292;
-    double longitud_est = -16.277440;
-
-    // El sensor manager del dispositivo
-    private SensorManager mSensorManager;
-    // Los dos sensores que son necesarios porque TYPE_ORINETATION esta deprecated
-    private Sensor accelerometer;
-    private Sensor magnetometer;
-
-    float degreeB;
-
-    // Los angulos del movimiento de la flecha que señala al norte
-    float degree;
-    // Guarda el valor del azimut
-    float azimut;
-    // Guarda los valores que cambián con las variaciones del sensor TYPE_ACCELEROMETER
-    float[] mGravity;
-    // Guarda los valores que cambián con las variaciones del sensor TYPE_MAGNETIC_FIELD
-    float[] mGeomagnetic;
-
-    // ----------------------------------------------------------------------------------------
-
-    DecimalFormat dec1 = new DecimalFormat("#.0");
-    DecimalFormat dec2 = new DecimalFormat("#.00");
+    int idNoti = 0;
+    double lat, lon = 0;
+    String CHANNEL_ID = "CHANNEL_1";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("TFG_debug", "Activity:LAND.");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.land_layout);
-        Log.d("TFG_debug", "ACTIVIDAD LAND");
 
-        Button auxButton = (Button) findViewById(R.id.button);
-        getGPS(auxButton);
+        SurfaceView mSurfaceView;
+        mSurfaceView = findViewById(R.id.surface);
+        StreamingClass st = new StreamingClass(this, mSurfaceView, 1);
+        st.toggleStreaming();
+        Log.d("TFG_debug", "Streaming LAND");
 
+        TextView record_text_land = (TextView) findViewById(R.id.record_text_land);
+        comprobar_cambio(record_text_land);
 
-        // ----------------------------------------------------------------------------------------
-        // Se guardan en variables los elementos del layout
-        imgCompass = (ImageView) findViewById(R.id.imgViewCompass);
-        imgCompassB = (ImageView) findViewById(R.id.imgViewArrowBlue);
-        imgCompassR = (ImageView) findViewById(R.id.imgViewArrowRed);
-        txtAngle = (TextView) findViewById(R.id.txtAngle);
-        txtAngleB = (TextView) findViewById(R.id.txtAngleB);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference notiRef = database.getReference("notification");
+        final DatabaseReference droneRef = database.getReference("GPS/drone");
 
-        // Se inicializa los sensores del dispositivo android
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        notiRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-        mGravity = null;
-        mGeomagnetic = null;
-        // ----------------------------------------------------------------------------------------
+                idNoti = Integer.parseInt(dataSnapshot.getValue().toString());
+                droneRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        lat = Double.parseDouble(dataSnapshot.child("lat").getValue().toString());
+                        lon = Double.parseDouble(dataSnapshot.child("lon").getValue().toString());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        Log.d("TFG_debug", "Failed to read value.", error.toException());
+                    }
+                });
+                createNotificationChannel();
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                        .setSmallIcon(R.drawable.droneicon)
+                        .setContentTitle("Coordenadas del DRONE")
+                        .setContentText("Latitud: " + lat + " | Longitud: "+ lon)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText("Latitud: " + lat + " | Longitud: "+ lon))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                notificationManager.notify(idNoti, mBuilder.build());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.d("TFG_debug", "Failed to read value.", error.toException());
+            }
+        });
     }
+
+    private void createNotificationChannel(){
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "CHANNEL NAME";
+            String description ="CHANNEL DESCRIPTION";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void comprobar_cambio(final TextView record_text_land){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                if (streamOk==1)
+                    record_text_land.setTextColor(getApplicationContext().getResources().getColor(R.color.green));
+                else {
+                    record_text_land.setTextColor(getApplicationContext().getResources().getColor(R.color.red));
+                    comprobar_cambio(record_text_land);
+                }
+            }
+        }, 3000);
+    }
+}

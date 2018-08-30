@@ -3,26 +3,28 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <VideoView
-        android:id="@+id/videoReceiver"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"/>
-
+    android:layout_height="match_parent"
+    android:background="@color/lightbg">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:name="com.google.android.gms.maps.MapFragment"
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"/>
+        android:layout_height="match_parent"/>
+
+    <VideoView
+        android:id="@+id/videoReceiver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="3dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="5dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -34,12 +36,20 @@
                 android:id="@+id/latitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Latitude: " />
+                android:cursorVisible="false"
+                android:fontFamily="sans-serif"
+                android:text="Latitude: "
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/latitudeV"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <Space
                 android:layout_width="0dp"
@@ -50,7 +60,10 @@
                 android:id="@+id/provV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="" />
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -63,12 +76,18 @@
                 android:id="@+id/longitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Longitude: " />
+                android:text="Longitude: "
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/longitudeV"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -81,12 +100,18 @@
                 android:id="@+id/altitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Altitude: " />
+                android:text="Altitude: "
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/altitudeV"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -99,12 +124,18 @@
                 android:id="@+id/bearing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bearing: " />
+                android:text="Bearing: "
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/bearingV"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -117,13 +148,39 @@
                 android:id="@+id/speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Speed: " />
+                android:text="Speed: "
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/speedV"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtAngle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="N: 0.0º"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+        <TextView
+
+            android:id="@+id/txtAngleB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="B: 0.0º"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
 
         <Space
             android:layout_width="wrap_content"
@@ -132,34 +189,53 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="5"
-                android:orientation="vertical">
+            <Button
+                android:id="@+id/person_button"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="bottom"
+                android:padding="2dp"
+                android:layout_margin="2dp"
+                android:background="@drawable/roundbutton"
+                android:drawableTop="@drawable/manicon"
+                android:onClick="pulsado_boton_man"/>
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="2"/>
+            <Button
+                android:id="@+id/drone_button"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="bottom"
+                android:padding="2dp"
+                android:layout_margin="2dp"
+                android:background="@drawable/roundbutton"
+                android:drawableTop="@drawable/droneicon"
+                android:onClick="pulsado_boton_drone"/>
 
-                <Button
-                    android:id="@+id/maps_button"
-                    android:background="@drawable/roundbutton"
-                    android:drawableTop="@drawable/mapicon"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_gravity="bottom"
-                    android:onClick="pulsado_boton_maps"
-                    android:padding="2dp"
-                    android:layout_margin="2dp"/>
+            <Button
+                android:id="@+id/maps_button"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="bottom"
+                android:padding="2dp"
+                android:layout_margin="2dp"
+                android:background="@drawable/roundbutton"
+                android:drawableTop="@drawable/mapicon"
+                android:onClick="pulsado_boton_maps" />
 
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/notification_button"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="bottom"
+                android:padding="2dp"
+                android:layout_margin="2dp"
+                android:background="@drawable/roundbutton"
+                android:drawableTop="@drawable/noticon"
+                android:onClick="pulsado_boton_notification" />
 
             <Space
                 android:layout_width="0dp"
@@ -167,20 +243,17 @@
                 android:layout_weight="8" />
 
             <LinearLayout
-                android:layout_weight="4"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                android:layout_weight="4"
+                android:orientation="vertical"
+                android:layout_gravity="bottom">
 
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_horizontal">
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1">
 
                     <ImageView
                         android:id="@+id/imgViewCompass"
@@ -211,25 +284,7 @@
                         android:src="@drawable/arrowred" />
 
                 </FrameLayout>
-
-                <TextView
-                    android:id="@+id/txtAngle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="N: 0.0º"
-                    android:textAlignment="center" />
-
-                <TextView
-
-                    android:id="@+id/txtAngleB"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="B: 0.0º"
-                    android:textAlignment="center" />
-
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 </FrameLayout>

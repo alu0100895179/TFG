@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -19,6 +20,8 @@ import net.majorkernelpanic.streaming.gl.SurfaceView;
 
 import java.util.ArrayList;
 import java.util.List;
+import static proyectos.jaime.tfg.StreamingClass.streamOk;
+
 
 public class AirActivity extends Activity implements SensorEventListener, LocationListener {
 
@@ -30,8 +33,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private LocationManager locationManager;
-
-    public static int streamOk = -1;
 
     // guarda el angulo (grado) actual del compass
     private float currentDegree = 0f;
@@ -67,14 +68,11 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         Log.d("TFG_debug", "Comienza Streamming");
         SurfaceView mSurfaceView;
         mSurfaceView = findViewById(R.id.surface);
-        StreamingClass st = new StreamingClass(this, mSurfaceView);
+        StreamingClass st = new StreamingClass(this, mSurfaceView, 0);
         st.toggleStreaming();
 
         TextView record_text = (TextView) findViewById(R.id.record_text);
-        if (streamOk==1)
-            record_text.setTextColor(this.getResources().getColor(R.color.green));
-        else
-            record_text.setTextColor(this.getResources().getColor(R.color.red));
+        comprobar_cambio(record_text);
 
         // Se inicializan los sensores del dispositivo android
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -100,6 +98,21 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0, this);
         }*/
 
+    }
+
+    private void comprobar_cambio(final TextView record_text){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+
+                if (streamOk==1)
+                    record_text.setTextColor(getApplicationContext().getResources().getColor(R.color.green));
+                else {
+                    record_text.setTextColor(getApplicationContext().getResources().getColor(R.color.red));
+                    comprobar_cambio(record_text);
+                }
+            }
+        }, 3000);
     }
 
     /////////////////////////////////GPS/////////////////////////////////////////////////////////////////////
@@ -130,12 +143,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
 
     @Override
     public void onLocationChanged(Location location) {
-
-        TextView record_text = (TextView) findViewById(R.id.record_text);
-        if (streamOk==1)
-            record_text.setTextColor(this.getResources().getColor(R.color.green));
-        else
-            record_text.setTextColor(this.getResources().getColor(R.color.red));
 
         //private latitud_est = 28.459983;
         //private double longitud_est = -16.274791;
