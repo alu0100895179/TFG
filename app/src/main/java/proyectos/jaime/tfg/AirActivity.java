@@ -22,46 +22,39 @@ import java.util.ArrayList;
 import java.util.List;
 import static proyectos.jaime.tfg.StreamingClass.streamOk;
 
-
 public class AirActivity extends Activity implements SensorEventListener, LocationListener {
 
-    //private static SurfaceView mSurfaceView;
-
-    private boolean aux = false;
-    private double vect_x ;
-    private double vect_y;
-
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private LocationManager locationManager;
 
-    // guarda el angulo (grado) actual del compass
+    private LocationManager locationManager;
+    double lat, lon, alt, bearing, speed;
+    private double vect_x, vect_y = 0;
+    private double latBase, lonBase = 0;
+    private boolean aux = false;
+    private boolean first_location = true;
+
+    // Valores de los grados
     private float currentDegree = 0f;
     private float currentDegreeB = 0f;
     private float currentDegreeR = 0f;
 
-    // El sensor manager del dispositivo
-    private SensorManager mSensorManager;
-
-    // Los dos sensores que son necesarios porque TYPE_ORINETATION esta deprecated
-    private Sensor accelerometer;
-    private Sensor magnetometer;
-
-    // Los angulos del movimiento de la flecha que señala al norte
     float degree;
     float degreeB;
     float degreeOld;
-    // Guarda el valor del azimut
+
+    // El sensor manager del dispositivo
+    private SensorManager mSensorManager;
+    // Sensores para la brújula
+    private Sensor accelerometer;
+    private Sensor magnetometer;
     float azimut;
-    // Guarda los valores que cambián con las variaciones del sensor TYPE_ACCELEROMETER
     float[] mGravity;
-    // Guarda los valores que cambián con las variaciones del sensor TYPE_MAGNETIC_FIELD
     float[] mGeomagnetic;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////// CONSTRUCTOR /////////////////////////////////////////////////////////////////////
     protected void onCreate(Bundle savedInstanceState) {
 
         Log.d("TFG_debug", "AIR ACTIVITY");
-        //Activity act = (Activity) this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.air_layout);
 
@@ -87,7 +80,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         Log.d("TFG_debug", "BEST_PROVIDER");
         if(provider!=null) {
             locationManager.requestLocationUpdates(get_best_provider(), 500, 0, this);
-            Log.d("TFG_debug", "AFTER LISTENER");
         }
         /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //Requiere permisos para Android 6.0
@@ -97,7 +89,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
             Log.i("TFG_debug", "Permisos necesarios OK!.");
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0, this);
         }*/
-
     }
 
     private void comprobar_cambio(final TextView record_text){
@@ -115,7 +106,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         }, 3000);
     }
 
-    /////////////////////////////////GPS/////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////// GPS /////////////////////////////////////////////////////////////////////
     private String get_best_provider(){
         List<String> providers = new ArrayList<>();
         try {
@@ -144,25 +135,9 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     @Override
     public void onLocationChanged(Location location) {
 
-        //private latitud_est = 28.459983;
-        //private double longitud_est = -16.274791;
-
-        // Mi casa 28.460202, -16.274843
-
+        Log.d("TFG_debug", "onLocationChanged");
         TextView gps_text = (TextView) findViewById(R.id.gps_text);
         gps_text.setTextColor(this.getResources().getColor(R.color.green));
-
-        double latBase = 28.463625;
-        double lonBase = -16.276480;
-
-        Log.d("TFG_debug", "updateWithNewLocation");
-
-        double lat = location.getLatitude();
-        double lon = location.getLongitude();
-        double alt = location.getAltitude();
-        double bearing = location.getBearing();
-        double speed = location.getSpeed();
-        String prov = location.getProvider();
 
         DatabaseReference latRef = database.getReference("GPS/drone/lat");
         DatabaseReference lonRef = database.getReference("GPS/drone/lon");
@@ -170,8 +145,13 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         DatabaseReference bearingRef = database.getReference("GPS/drone/bearing");
         DatabaseReference speedRef = database.getReference("GPS/drone/speed");
         DatabaseReference provRef = database.getReference("GPS/drone/prov");
-        DatabaseReference latBaseRef = database.getReference("GPS/base/lat");
-        DatabaseReference lonBaseRef = database.getReference("GPS/base/lon");
+
+        lat = location.getLatitude();
+        lon = location.getLongitude();
+        alt = location.getAltitude();
+        bearing = location.getBearing();
+        speed = location.getSpeed();
+        String prov = location.getProvider();
 
         latRef.setValue(lat);
         lonRef.setValue(lon);
@@ -179,9 +159,19 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         bearingRef.setValue(bearing);
         speedRef.setValue(speed);
         provRef.setValue(prov);
-        latBaseRef.setValue(latBase);
-        lonBaseRef.setValue(lonBase);
 
+        if(first_location) {
+
+            latBase = lat;
+            lonBase = lon;
+            first_location = false;
+
+            DatabaseReference latBaseRef = database.getReference("GPS/base/lat");
+            DatabaseReference lonBaseRef = database.getReference("GPS/base/lon");
+
+            latBaseRef.setValue(latBase);
+            lonBaseRef.setValue(lonBase);
+        }
         vect_x = lonBase - lon;
         vect_y = latBase - lat;
     }
@@ -283,11 +273,12 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Se registra un listener para los sensores del accelerometer y el             magnetometer
+        // Se registra un listener para los sensores del accelerometer y el magnetometer
         mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
     }
@@ -302,6 +293,56 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
 
     /////////////////////////////////////// GRADOS BASE ///////////////////////////////////////////////
     private void calcular_base (){
+
+        if (vect_x == 0) {
+            if (vect_y == 0) {
+                //Log.d("TFG_debug", "PARADOS");
+                // 0 grados - estamos parados
+            } else {
+                if (vect_y > 0) {
+                    // 0 grados NORTE
+                    Log.d("TFG_debug", "NORTE");
+                } else {
+                    degreeB = 180;
+                    // 180 grados SUR
+                    Log.d("TFG_debug", "SUR");
+                }
+            }
+        } else if (vect_y == 0) {
+            if (vect_x > 0) {
+                degreeB = 90;
+                // 90 grados ESTE
+                Log.d("TFG_debug", "ESTE");
+            } else {
+                degreeB = 180;
+                // 180 grados OESTE
+                Log.d("TFG_debug", "OESTE");
+            }
+        } else {
+            if (vect_x > 0) {
+                if (vect_y > 0) {
+                    //NE
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                } else {
+                    //SE
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y/vect_x)));
+                    degreeB = 180 - degreeB;
+                }
+            } else {
+                if (vect_y > 0) {
+                    //NO
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeB = 360 - degreeB;
+                } else {
+                    //SO
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeB = 180 + degreeB;
+                }
+            }
+        }
+    }
+
+    private void calcular_rumbo (){
 
         if (vect_x == 0) {
             if (vect_y == 0) {

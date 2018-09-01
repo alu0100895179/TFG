@@ -225,22 +225,14 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
         VideoView view = findViewById(R.id.videoReceiver);
         view.setVisibility(View.VISIBLE);
 
-        String path2 = "rtsp://192.168.1.34:1935/casus/android_air";
-        Uri video = Uri.parse(path2);
-        Log.d("TFG_debug", "PRE1: Recibiendo Streaming");
+        String direccion = ConfigActivity.STREAM_URL_AIR;
+        Uri video = Uri.parse(direccion);
         mVideoView = (VideoView)this.findViewById(R.id.videoReceiver);
-        Log.d("TFG_debug", "PRE2: Recibiendo Streaming");
         mVideoView.setVideoURI(video);
-        Log.d("TFG_debug", "PRE3: Recibiendo Streaming");
         mVideoView.setMediaController(new MediaController(this));
-        Log.d("TFG_debug", "PRE4: Recibiendo Streaming");
         mVideoView.requestFocus();
-        Log.d("TFG_debug", "PRE5: Recibiendo Streaming");
         mVideoView.postInvalidateDelayed(100);
-        Log.d("TFG_debug", "PRE6: Recibiendo Streaming");
         mVideoView.start();
-
-        Log.d("TFG_debug", "Recibiendo Streaming");
 
     }
 
@@ -252,22 +244,14 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
         VideoView view = findViewById(R.id.videoReceiver);
         view.setVisibility(View.VISIBLE);
 
-        String path2 = "rtsp://192.168.1.34:1935/casus/android_land";
-        Uri video = Uri.parse(path2);
-        Log.d("TFG_debug", "PRE1: Recibiendo Streaming");
-        mVideoView = (VideoView)this.findViewById(R.id.videoReceiver);
-        Log.d("TFG_debug", "PRE2: Recibiendo Streaming");
+        String direccion = ConfigActivity.STREAM_URL_LAND;
+        Uri video = Uri.parse(direccion);
+        mVideoView =  (VideoView)this.findViewById(R.id.videoReceiver);
         mVideoView.setVideoURI(video);
-        Log.d("TFG_debug", "PRE3: Recibiendo Streaming");
         mVideoView.setMediaController(new MediaController(this));
-        Log.d("TFG_debug", "PRE4: Recibiendo Streaming");
         mVideoView.requestFocus();
-        Log.d("TFG_debug", "PRE5: Recibiendo Streaming");
         mVideoView.postInvalidateDelayed(100);
-        Log.d("TFG_debug", "PRE6: Recibiendo Streaming");
         mVideoView.start();
-
-        Log.d("TFG_debug", "Recibiendo Streaming");
 
     }
 
