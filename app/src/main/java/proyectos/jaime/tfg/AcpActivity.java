@@ -44,6 +44,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
 
     MapFragment mapFragment;
     GoogleMap mMap;
+    boolean viendo_mapa = false;
     VideoView mVideoView;
 
     @Override
@@ -124,6 +125,14 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
                         aux = "";
                 }
                 provText.setText(aux);
+
+                if (viendo_mapa){
+                    mMap.clear();
+                    LatLng drone = new LatLng(lat, lon);
+                    LatLng base = new LatLng(latBase, lonBase);
+                    mMap.addMarker(new MarkerOptions().position(drone).title("DRONE Position"));
+                    mMap.addMarker(new MarkerOptions().position(base).title("BASE Position").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                }
             }
 
             @Override
@@ -210,6 +219,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
 
         vista.startAnimation(buttonClick);
 
+        viendo_mapa = true;
         VideoView view = findViewById(R.id.videoReceiver);
         view.setVisibility(View.GONE);
         mapFragment.getView().setVisibility(View.VISIBLE);
@@ -221,6 +231,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
 
         vista.startAnimation(buttonClick);
 
+        viendo_mapa = false;
         mapFragment.getView().setVisibility(View.INVISIBLE);
         VideoView view = findViewById(R.id.videoReceiver);
         view.setVisibility(View.VISIBLE);
@@ -240,6 +251,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
 
         vista.startAnimation(buttonClick);
 
+        viendo_mapa = false;
         mapFragment.getView().setVisibility(View.INVISIBLE);
         VideoView view = findViewById(R.id.videoReceiver);
         view.setVisibility(View.VISIBLE);
@@ -258,6 +270,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.clear();
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         UiSettings uiSettings = mMap.getUiSettings();
@@ -266,6 +279,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
         float zoom=20;
         LatLng drone = new LatLng(lat, lon);
         LatLng base = new LatLng(latBase, lonBase);
+
         mMap.addMarker(new MarkerOptions().position(drone).title("DRONE Position"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(drone,zoom));
         mMap.addMarker(new MarkerOptions().position(base).title("BASE Position").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));

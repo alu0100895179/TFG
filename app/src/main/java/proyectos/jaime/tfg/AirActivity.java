@@ -27,20 +27,16 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     private LocationManager locationManager;
-    double lat, lon, alt, bearing, speed;
+    double lat, lon, alt, bearing, speed = 0;
+    double lat_old, lon_old = 0;
     private double vect_x, vect_y = 0;
     private double latBase, lonBase = 0;
     private boolean aux = false;
     private boolean first_location = true;
 
     // Valores de los grados
-    private float currentDegree = 0f;
-    private float currentDegreeB = 0f;
-    private float currentDegreeR = 0f;
-
-    float degree;
-    float degreeB;
-    float degreeOld;
+    private float currentDegree, currentDegreeB, currentDegreeR = 0f;
+    float degree, degreeB, degreeOld = 0f;
 
     // El sensor manager del dispositivo
     private SensorManager mSensorManager;
@@ -58,26 +54,26 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.air_layout);
 
+        TextView record_text = (TextView) findViewById(R.id.record_text_air);
+
         Log.d("TFG_debug", "Comienza Streamming");
         SurfaceView mSurfaceView;
-        mSurfaceView = findViewById(R.id.surface);
+        mSurfaceView = findViewById(R.id.surface_air);
         StreamingClass st = new StreamingClass(this, mSurfaceView, 0);
         st.toggleStreaming();
 
-        TextView record_text = (TextView) findViewById(R.id.record_text);
         comprobar_cambio(record_text);
 
-        // Se inicializan los sensores del dispositivo android
+        Log.d("TFG_debug", "Sensores brujula");
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        Log.d("TFG_debug", "Declaramos sensores");
         mGravity = null;
         mGeomagnetic = null;
 
+        Log.d("TFG_debug", "Obtener proveedores de GPS.");
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         String provider = get_best_provider();
-        Log.d("TFG_debug", "BEST_PROVIDER");
         if(provider!=null) {
             locationManager.requestLocationUpdates(get_best_provider(), 500, 0, this);
         }
@@ -146,6 +142,9 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         DatabaseReference speedRef = database.getReference("GPS/drone/speed");
         DatabaseReference provRef = database.getReference("GPS/drone/prov");
 
+        lat_old = lat;
+        lon_old = lon;
+
         lat = location.getLatitude();
         lon = location.getLongitude();
         alt = location.getAltitude();
@@ -179,8 +178,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     @Override
     public void onProviderDisabled(String provider) {
 
-        Log.d("TFG_debug", "Gps turned off");
-
+        Log.d("TFG_debug", "Gps apagado");
         TextView gps_text = (TextView) findViewById(R.id.gps_text);
         gps_text.setTextColor(this.getResources().getColor(R.color.red));
     }
@@ -188,19 +186,21 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     @Override
     public void onProviderEnabled(String provider) {
 
-        Log.d("TFG_debug", "Gps turned on");
+        Log.d("TFG_debug", "Gps encendido");
 
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.d("TFG_debug", "estao cambio");
+
+        Log.d("TFG_debug", "Cambio de estado.");
     }
 
     ////////////////////////////////////////// BRUJULA /////////////////////////////////////////////////////
     public void onSensorChanged(SensorEvent event) {
 
         boolean envia=true;
+        TextView compass_text = (TextView) findViewById(R.id.compass_text);
 
         // Se comprueba que tipo de sensor está activo en cada momento
         switch (event.sensor.getType()) {
@@ -214,7 +214,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
 
         if ((mGravity != null) && (mGeomagnetic != null)) {
 
-            TextView compass_text = (TextView) findViewById(R.id.compass_text);
             compass_text.setTextColor(this.getResources().getColor(R.color.green));
 
             float RotationMatrix[] = new float[16];
@@ -224,6 +223,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
                 SensorManager.getOrientation(RotationMatrix, orientation);
                 azimut = orientation[0] * (180 / (float) Math.PI);
                 calcular_base();
+                //calcular_rumbo();
                 degreeB = (degreeB - azimut)%360;
                 if (azimut < 0)
                     azimut = 360 + azimut;
@@ -233,7 +233,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
             }
         }
         else{
-            TextView compass_text = (TextView) findViewById(R.id.compass_text);
             compass_text.setTextColor(this.getResources().getColor(R.color.red));
         }
         degree = azimut;
@@ -266,7 +265,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
             }
         }
         degreeOld=degree;
-
     }
 
     @Override

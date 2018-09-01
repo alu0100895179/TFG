@@ -38,7 +38,7 @@ public class LandActivity extends Activity {
         setContentView(R.layout.land_layout);
 
         SurfaceView mSurfaceView;
-        mSurfaceView = findViewById(R.id.surface);
+        mSurfaceView = findViewById(R.id.surface_land);
         StreamingClass st = new StreamingClass(this, mSurfaceView, 1);
         st.toggleStreaming();
         Log.d("TFG_debug", "Streaming LAND");
@@ -54,32 +54,33 @@ public class LandActivity extends Activity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                idNoti = Integer.parseInt(dataSnapshot.getValue().toString());
+                droneRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        lat = Double.parseDouble(dataSnapshot.child("lat").getValue().toString());
+                        lon = Double.parseDouble(dataSnapshot.child("lon").getValue().toString());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        Log.d("TFG_debug", "Failed to read value.", error.toException());
+                    }
+                });
+                createNotificationChannel();
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                        .setSmallIcon(R.drawable.droneicon)
+                        .setContentTitle("Coordenadas del DRONE")
+                        .setContentText("Latitud: " + lat + " | Longitud: " + lon)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText("Latitud: " + lat + " | Longitud: " + lon))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
                 if (aux_first_noti) {
                     aux_first_noti = false;
                 }
                 else {
-                    idNoti = Integer.parseInt(dataSnapshot.getValue().toString());
-                    droneRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            lat = Double.parseDouble(dataSnapshot.child("lat").getValue().toString());
-                            lon = Double.parseDouble(dataSnapshot.child("lon").getValue().toString());
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            // Failed to read value
-                            Log.d("TFG_debug", "Failed to read value.", error.toException());
-                        }
-                    });
-                    createNotificationChannel();
-                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                            .setSmallIcon(R.drawable.droneicon)
-                            .setContentTitle("Coordenadas del DRONE")
-                            .setContentText("Latitud: " + lat + " | Longitud: " + lon)
-                            .setStyle(new NotificationCompat.BigTextStyle()
-                                    .bigText("Latitud: " + lat + " | Longitud: " + lon))
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
                     notificationManager.notify(idNoti, mBuilder.build());
                 }
