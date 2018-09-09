@@ -1,22 +1,20 @@
 package proyectos.jaime.tfg;
 
-import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import static proyectos.jaime.tfg.AcpActivity.lat;
+/*import static proyectos.jaime.tfg.AcpActivity.lat;
 import static proyectos.jaime.tfg.AcpActivity.latBase;
 import static proyectos.jaime.tfg.AcpActivity.lon;
-import static proyectos.jaime.tfg.AcpActivity.lonBase;
+import static proyectos.jaime.tfg.AcpActivity.lonBase;*/
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -44,7 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        /*mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         UiSettings uiSettings = mMap.getUiSettings();
@@ -56,5 +54,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(drone).title("DRONE Position"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(drone,zoom));
         mMap.addMarker(new MarkerOptions().position(base).title("BASE Position").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        */
     }
 }

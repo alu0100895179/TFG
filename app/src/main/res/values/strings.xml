@@ -1,4 +1,25 @@
 <resources>
     <string name="app_name">TFG</string>
     <string name="title_activity_maps">Map</string>
+    <string name="app_name2">Air Monitoring</string>
+
+    <string name="airST">Air</string>
+    <string name="landST">Land</string>
+    <string name="acpST">ACP</string>
+    <string name="settingsST">Settings</string>
+
+    <string name="latitudeST">Latitude: </string>
+    <string name="longitudeST">Longitude: </string>
+    <string name="altitudeST">Altitude: </string>
+    <string name="bearingST">Bearing: </string>
+    <string name="speedST">Speed: </string>
+    <string name="nST">N:</string>
+    <string name="bST">B:</string>
+
+    <string name="mapsDroneST">DRONE position</string>
+    <string name="mapsLandST">LAND position</string>
+    <string name="mapsBaseST">BASE position</string>
+
+    <string name="configTitST">Enter the server address</string>
+    <string name="notiTitleST">Drone coordinates</string>
 </resources>

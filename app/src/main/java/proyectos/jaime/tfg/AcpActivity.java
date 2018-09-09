@@ -34,8 +34,9 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     int idNoti = 0;
 
-    static double alt, lat, lon, bearing, speed;
-    static double lonBase, latBase;
+    double alt, lat, lon, bearing, speed;
+    double latBase, lonBase;
+    double latLand, lonLand;
 
     DecimalFormat dec1 = new DecimalFormat("#.0");
     DecimalFormat dec2 = new DecimalFormat("#.00");
@@ -45,6 +46,8 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
     MapFragment mapFragment;
     GoogleMap mMap;
     boolean viendo_mapa = false;
+    float zoom=20;
+
     VideoView mVideoView;
 
     @Override
@@ -127,11 +130,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
                 provText.setText(aux);
 
                 if (viendo_mapa){
-                    mMap.clear();
-                    LatLng drone = new LatLng(lat, lon);
-                    LatLng base = new LatLng(latBase, lonBase);
-                    mMap.addMarker(new MarkerOptions().position(drone).title("DRONE Position"));
-                    mMap.addMarker(new MarkerOptions().position(base).title("BASE Position").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    actualiza_mapa(-1);
                 }
             }
 
@@ -142,7 +141,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
             }
         });
 
-        DatabaseReference brujulaRef = database.getReference("brujula");
+        DatabaseReference brujulaRef = database.getReference("compass");
         brujulaRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -194,6 +193,32 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
 
                 latBase = Double.parseDouble(dataSnapshot.child("lat").getValue().toString());
                 lonBase = Double.parseDouble(dataSnapshot.child("lon").getValue().toString());
+
+                if (viendo_mapa){
+                    actualiza_mapa(-1);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.d("TFG_debug", "Failed to read value.", error.toException());
+            }
+        });
+
+
+        DatabaseReference landRef = database.getReference("GPS/land");
+        landRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                latLand = Double.parseDouble(dataSnapshot.child("lat").getValue().toString());
+                lonLand = Double.parseDouble(dataSnapshot.child("lon").getValue().toString());
+
+                if (viendo_mapa){
+                    actualiza_mapa(-1);
+                }
 
             }
 
@@ -267,21 +292,29 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
 
     }
 
+    public void actualiza_mapa(float zoom){
+
+        mMap.clear();
+
+        LatLng drone = new LatLng(lat, lon);
+        LatLng base = new LatLng(latBase, lonBase);
+        LatLng land = new LatLng(latLand, lonLand);
+        if(zoom>0)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(drone,zoom));
+        mMap.addMarker(new MarkerOptions().position(drone).title(getString(R.string.mapsDroneST)).icon(BitmapDescriptorFactory.fromResource(R.drawable.dronemarker)));
+        mMap.addMarker(new MarkerOptions().position(land).title(getString(R.string.mapsLandST)).icon(BitmapDescriptorFactory.fromResource(R.drawable.landmarker)));
+        mMap.addMarker(new MarkerOptions().position(base).title(getString(R.string.mapsBaseST)).icon(BitmapDescriptorFactory.fromResource(R.drawable.basemarker)));
+
+        // mMap.addMarker(new MarkerOptions().position(land).title("LAND Position").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.clear();
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-
         UiSettings uiSettings = mMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
 
-        float zoom=20;
-        LatLng drone = new LatLng(lat, lon);
-        LatLng base = new LatLng(latBase, lonBase);
-
-        mMap.addMarker(new MarkerOptions().position(drone).title("DRONE Position"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(drone,zoom));
-        mMap.addMarker(new MarkerOptions().position(base).title("BASE Position").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        actualiza_mapa(20);
     }
 }

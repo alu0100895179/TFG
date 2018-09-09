@@ -17,7 +17,7 @@
         android:layout_height="0dp"
         android:fontFamily="cursive"
         android:gravity="center"
-        android:text="Air Monitoring"
+        android:text="@string/app_name2"
         android:textAlignment="center"
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textSize="52sp"
@@ -43,7 +43,7 @@
             android:fontFamily="sans-serif-condensed"
             android:onClick="pulsado_boton_air"
             android:padding="20dp"
-            android:text="Air"
+            android:text="@string/airST"
             android:textSize="16sp" />
 
         <Space
@@ -60,7 +60,7 @@
             android:focusable="true"
             android:fontFamily="sans-serif-condensed"
             android:onClick="pulsado_boton_sett"
-            android:text="Settings"
+            android:text="@string/settingsST"
             android:textSize="16sp"/>
 
 
@@ -81,7 +81,7 @@
             android:drawableTop="@drawable/iconmountain"
             android:fontFamily="sans-serif-condensed"
             android:onClick="pulsado_boton_land"
-            android:text="Land"
+            android:text="@string/landST"
             android:textSize="16sp"
             android:clickable="true"
             android:focusable="true"/>
@@ -95,13 +95,12 @@
             android:background="@drawable/roundbutton"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:drawableTop="@drawable/pmaimg"
+            android:drawableTop="@drawable/iconacp"
             android:fontFamily="sans-serif-condensed"
             android:onClick="pulsado_boton_acp"
-            android:text="ACP"
+            android:text="@string/acpST"
             android:textSize="16sp"
             android:clickable="true"
             android:focusable="true"/>
     </LinearLayout>
-
 </LinearLayout>

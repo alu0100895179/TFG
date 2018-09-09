@@ -31,7 +31,7 @@ android:padding="5dp">
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/gps_text"
+            android:id="@+id/gps_text_air"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="• GPS"
@@ -40,7 +40,7 @@ android:padding="5dp">
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/compass_text"
+            android:id="@+id/compass_text_air"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="• COMPASS"

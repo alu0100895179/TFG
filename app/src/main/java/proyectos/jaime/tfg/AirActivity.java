@@ -1,5 +1,4 @@
 package proyectos.jaime.tfg;
-
 import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -54,15 +53,14 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.air_layout);
 
-        TextView record_text = (TextView) findViewById(R.id.record_text_air);
-
         Log.d("TFG_debug", "Comienza Streamming");
         SurfaceView mSurfaceView;
         mSurfaceView = findViewById(R.id.surface_air);
         StreamingClass st = new StreamingClass(this, mSurfaceView, 0);
         st.toggleStreaming();
 
-        comprobar_cambio(record_text);
+        TextView record_text_air = (TextView) findViewById(R.id.record_text_air);
+        comprobar_cambio(record_text_air);
 
         Log.d("TFG_debug", "Sensores brujula");
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -87,16 +85,16 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         }*/
     }
 
-    private void comprobar_cambio(final TextView record_text){
+    private void comprobar_cambio(final TextView record_text_air){
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
 
                 if (streamOk==1)
-                    record_text.setTextColor(getApplicationContext().getResources().getColor(R.color.green));
+                    record_text_air.setTextColor(getApplicationContext().getResources().getColor(R.color.green));
                 else {
-                    record_text.setTextColor(getApplicationContext().getResources().getColor(R.color.red));
-                    comprobar_cambio(record_text);
+                    record_text_air.setTextColor(getApplicationContext().getResources().getColor(R.color.red));
+                    comprobar_cambio(record_text_air);
                 }
             }
         }, 3000);
@@ -132,8 +130,8 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     public void onLocationChanged(Location location) {
 
         Log.d("TFG_debug", "onLocationChanged");
-        TextView gps_text = (TextView) findViewById(R.id.gps_text);
-        gps_text.setTextColor(this.getResources().getColor(R.color.green));
+        TextView gps_text_air = (TextView) findViewById(R.id.gps_text_air);
+        gps_text_air.setTextColor(this.getResources().getColor(R.color.green));
 
         DatabaseReference latRef = database.getReference("GPS/drone/lat");
         DatabaseReference lonRef = database.getReference("GPS/drone/lon");
@@ -179,8 +177,8 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     public void onProviderDisabled(String provider) {
 
         Log.d("TFG_debug", "Gps apagado");
-        TextView gps_text = (TextView) findViewById(R.id.gps_text);
-        gps_text.setTextColor(this.getResources().getColor(R.color.red));
+        TextView gps_text_air = (TextView) findViewById(R.id.gps_text_air);
+        gps_text_air.setTextColor(this.getResources().getColor(R.color.red));
     }
 
     @Override
@@ -200,7 +198,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     public void onSensorChanged(SensorEvent event) {
 
         boolean envia=true;
-        TextView compass_text = (TextView) findViewById(R.id.compass_text);
+        TextView compass_text_air = (TextView) findViewById(R.id.compass_text_air);
 
         // Se comprueba que tipo de sensor está activo en cada momento
         switch (event.sensor.getType()) {
@@ -214,7 +212,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
 
         if ((mGravity != null) && (mGeomagnetic != null)) {
 
-            compass_text.setTextColor(this.getResources().getColor(R.color.green));
+            compass_text_air.setTextColor(this.getResources().getColor(R.color.green));
 
             float RotationMatrix[] = new float[16];
             boolean success = SensorManager.getRotationMatrix(RotationMatrix, null, mGravity, mGeomagnetic);
@@ -233,16 +231,16 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
             }
         }
         else{
-            compass_text.setTextColor(this.getResources().getColor(R.color.red));
+            compass_text_air.setTextColor(this.getResources().getColor(R.color.red));
         }
         degree = azimut;
         if(Math.abs(degreeOld-degree)<1)
             envia=false;
         if(envia) {
-            DatabaseReference degreeRef = database.getReference("brujula/degree");
-            DatabaseReference currentDegreeRef = database.getReference("brujula/currentDegree");
-            DatabaseReference degreeBRef = database.getReference("brujula/degreeB");
-            DatabaseReference currentDegreeBRef = database.getReference("brujula/currentDegreeB");
+            DatabaseReference degreeRef = database.getReference("compass/degree");
+            DatabaseReference currentDegreeRef = database.getReference("compass/currentDegree");
+            DatabaseReference degreeBRef = database.getReference("compass/degreeB");
+            DatabaseReference currentDegreeBRef = database.getReference("compass/currentDegreeB");
 
             /*Log.d("TFG_debug", "currentDegree= "+currentDegree);
             Log.d("TFG_debug", "degree= " + degree);*/

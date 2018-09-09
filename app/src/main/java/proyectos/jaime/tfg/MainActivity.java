@@ -30,18 +30,20 @@ public class MainActivity extends AppCompatActivity {
     public void pulsado_boton_land (View vista){
 
         vista.startAnimation(buttonClick);
-        Log.d("TFG_debug", "ANIMACION SUPERADA");
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if(ContextCompat.checkSelfPermission( this, Manifest.permission.CAMERA ) != PackageManager.PERMISSION_GRANTED ) {
 
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
-            Log.d("TFG_debug", "IF");
+            ActivityCompat.requestPermissions( this, new String[] {android.Manifest.permission.CAMERA}, MY_PERMISSION_ACCESS_CAMERA);
         }
         else {
-            Log.d("TFG_debug", "ELSE");
-            Intent i = new Intent(this, LandActivity.class);
-            startActivity(i);
 
+            if(ContextCompat.checkSelfPermission( this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions( this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
+            }
+            else {
+                Intent i = new Intent(this, LandActivity.class);
+                startActivity(i);
+            }
         }
     }
 

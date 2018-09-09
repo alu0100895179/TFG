@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TFG</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="app_name2">Air Monitoring</string>
+
+    <string name="airST">Aire</string>
+    <string name="landST">Tierra</string>
+    <string name="acpST">PMA</string>
+    <string name="settingsST">Configuración</string>
+
+    <string name="latitudeST">Latitud:\ "</string>
+    <string name="longitudeST">"Longitud:\ "</string>
+    <string name="altitudeST">Altitud:\ </string>
+    <string name="bearingST">Orientación:\ </string>
+    <string name="speedST">Velocidad:\ </string>
+    <string name="nST">N:\ </string>
+    <string name="bST">B:\ </string>
+
+    <string name="mapsDroneST">Posición: DRONE</string>
+    <string name="mapsLandST">Posición: TIERRA</string>
+    <string name="mapsBaseST">Posición: BASE</string>
+
+    <string name="configTitST">Introduzca la dirección del servidor</string>
+    <string name="notiTitleST">Coordenadas del drone</string>
+</resources>

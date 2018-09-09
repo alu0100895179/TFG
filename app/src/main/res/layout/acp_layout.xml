@@ -4,7 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightbg">
+    android:background="@color/colorPrimaryDark">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/acpbg"
+        android:layout_gravity="center"/>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:name="com.google.android.gms.maps.MapFragment"
@@ -36,9 +42,8 @@
                 android:id="@+id/latitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:cursorVisible="false"
                 android:fontFamily="sans-serif"
-                android:text="Latitude: "
+                android:text="@string/latitudeST"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -76,7 +81,7 @@
                 android:id="@+id/longitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Longitude: "
+                android:text="@string/longitudeST"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -100,7 +105,7 @@
                 android:id="@+id/altitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Altitude: "
+                android:text="@string/altitudeST"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -124,7 +129,7 @@
                 android:id="@+id/bearing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bearing: "
+                android:text="@string/bearingST"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -148,7 +153,7 @@
                 android:id="@+id/speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Speed: "
+                android:text="@string/speedST"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -167,7 +172,7 @@
             android:id="@+id/txtAngle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="N: 0.0º"
+            android:text="@string/nST"
             android:textSize="14sp"
             android:textColor="@android:color/white"
             android:textStyle="bold" />
@@ -177,7 +182,7 @@
             android:id="@+id/txtAngleB"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="B: 0.0º"
+            android:text="@string/bST"
             android:textSize="14sp"
             android:textColor="@android:color/white"
             android:textStyle="bold" />
@@ -241,19 +246,19 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="8" />
-
+<!--
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
                 android:orientation="vertical"
                 android:layout_gravity="bottom">
-
+-->
                 <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="bottom"
-                    android:layout_weight="1">
+                    android:layout_weight="4">
 
                     <ImageView
                         android:id="@+id/imgViewCompass"
@@ -285,6 +290,6 @@
 
                 </FrameLayout>
             </LinearLayout>
-        </LinearLayout>
+        <!--</LinearLayout>-->
     </LinearLayout>
 </FrameLayout>
