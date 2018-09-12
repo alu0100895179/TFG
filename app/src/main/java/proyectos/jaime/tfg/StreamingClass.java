@@ -56,7 +56,7 @@ public class StreamingClass implements RtspClient.Callback, Session.Callback, Su
                 .setAudioQuality(new AudioQuality(8000, 16000))
                 .setVideoEncoder(SessionBuilder.VIDEO_H264)
                 //.setVideoQuality(new VideoQuality(176,144,10,200000))
-                //.setVideoQuality(new VideoQuality(320, 240, 20, 500000))
+                .setVideoQuality(new VideoQuality(320, 240, 20, 500000))
                 .setSurfaceView(mSurfaceView)
                 .setPreviewOrientation(0)
                 .setCallback(this)
