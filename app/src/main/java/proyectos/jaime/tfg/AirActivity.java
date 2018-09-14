@@ -28,14 +28,14 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     private LocationManager locationManager;
     double lat, lon, alt, bearing, speed = 0;
     double lat_old, lon_old = 0;
-    private double vect_x, vect_y = 0;
     private double latBase, lonBase = 0;
-    private boolean aux = false;
+    private double vect_x, vect_y = 0;
+    private double vect_xB, vect_yB = 0;
     private boolean first_location = true;
 
     // Valores de los grados
     private float currentDegree, currentDegreeB, currentDegreeR = 0f;
-    float degree, degreeB, degreeOld = 0f;
+    float degree, degreeB, degreeR = 0f;
 
     // El sensor manager del dispositivo
     private SensorManager mSensorManager;
@@ -45,6 +45,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     float azimut;
     float[] mGravity;
     float[] mGeomagnetic;
+    int aux_debug=-1;
 
     ///////////////////////////////////////////////////////////////////// CONSTRUCTOR /////////////////////////////////////////////////////////////////////
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,8 +141,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         DatabaseReference speedRef = database.getReference("GPS/drone/speed");
         DatabaseReference provRef = database.getReference("GPS/drone/prov");
 
-        lat_old = lat;
-        lon_old = lon;
 
         lat = location.getLatitude();
         lon = location.getLongitude();
@@ -169,8 +168,17 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
             latBaseRef.setValue(latBase);
             lonBaseRef.setValue(lonBase);
         }
-        vect_x = lonBase - lon;
-        vect_y = latBase - lat;
+        else{
+            vect_x = lon - lon_old;
+            vect_y = lat - lat_old;
+            calcular_rumbo();
+        }
+
+        lat_old = lat;
+        lon_old = lon;
+
+        vect_xB = lonBase - lon;
+        vect_yB = latBase - lat;
     }
 
     @Override
@@ -200,7 +208,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         boolean envia=true;
         TextView compass_text_air = (TextView) findViewById(R.id.compass_text_air);
 
-        // Se comprueba que tipo de sensor está activo en cada momento
+        // Comprobamos sensor activo
         switch (event.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
                 mGravity = event.values;
@@ -220,49 +228,41 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(RotationMatrix, orientation);
                 azimut = orientation[0] * (180 / (float) Math.PI);
-                calcular_base();
-                //calcular_rumbo();
                 degreeB = (degreeB - azimut)%360;
+
                 if (azimut < 0)
                     azimut = 360 + azimut;
+                calcular_base();
+                degreeB=degreeB-degree;
                 if (degreeB < 0)
                     degreeB = 360 + degreeB;
-                aux=true;
             }
         }
         else{
             compass_text_air.setTextColor(this.getResources().getColor(R.color.red));
         }
         degree = azimut;
-        if(Math.abs(degreeOld-degree)<1)
-            envia=false;
-        if(envia) {
-            DatabaseReference degreeRef = database.getReference("compass/degree");
-            DatabaseReference currentDegreeRef = database.getReference("compass/currentDegree");
-            DatabaseReference degreeBRef = database.getReference("compass/degreeB");
-            DatabaseReference currentDegreeBRef = database.getReference("compass/currentDegreeB");
 
-            /*Log.d("TFG_debug", "currentDegree= "+currentDegree);
-            Log.d("TFG_debug", "degree= " + degree);*/
-            currentDegree = -degree;
-            if (Math.abs(degreeOld - degree) > 0.5)
-                degreeRef.setValue(degree);
-            degreeOld = degree;
-            currentDegreeRef.setValue(currentDegree);
+        DatabaseReference degreeRef = database.getReference("compass/degree");
+        DatabaseReference currentDegreeRef = database.getReference("compass/currentDegree");
+        DatabaseReference degreeBRef = database.getReference("compass/degreeB");
+        DatabaseReference currentDegreeBRef = database.getReference("compass/currentDegreeB");
+        DatabaseReference degreeRRef = database.getReference("compass/degreeR");
+        DatabaseReference currentDegreeRRef = database.getReference("compass/currentDegreeR");
 
-            if (aux) {
-                /*Log.d("TFG_debug", "currentDegreeB= "+currentDegreeB);
-                Log.d("TFG_debug", "degreeB= " + degreeB);*/
+        degreeRef.setValue(degree);
+        currentDegreeRef.setValue(currentDegree);
 
-                degreeBRef.setValue(degreeB);
-                currentDegreeBRef.setValue(currentDegreeB);
-                //GIRAR
-                currentDegreeB = -degreeB;
-                currentDegreeBRef.setValue(currentDegreeB);
-                aux = false;
-            }
-        }
-        degreeOld=degree;
+        degreeBRef.setValue(degreeB);
+        currentDegreeBRef.setValue(currentDegreeB);
+
+        degreeRRef.setValue(degreeR);
+        currentDegreeRRef.setValue(currentDegreeR);
+
+        currentDegree  = -degree;
+        currentDegreeB = -degreeB;
+        currentDegreeR = -degreeR;
+
     }
 
     @Override
@@ -274,7 +274,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     protected void onResume() {
         super.onResume();
 
-        // Se registra un listener para los sensores del accelerometer y el magnetometer
+        // Registramos un listener para los sensores del acelerometro y magnetometro
         mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
     }
@@ -283,55 +283,54 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     protected void onPause() {
         super.onPause();
 
-        // Se detiene el listener para no malgastar la bateria
+        // Pausa del listener para el ahorro de bateria
         mSensorManager.unregisterListener(this);
+        TextView compass_text_air = (TextView) findViewById(R.id.compass_text_air);
+        compass_text_air.setTextColor(this.getResources().getColor(R.color.green));
     }
 
     /////////////////////////////////////// GRADOS BASE ///////////////////////////////////////////////
     private void calcular_base (){
 
-        if (vect_x == 0) {
-            if (vect_y == 0) {
-                //Log.d("TFG_debug", "PARADOS");
-                // 0 grados - estamos parados
+        if (vect_xB == 0) {
+            if (vect_yB == 0) {
+                // 0 grados - estamos en base
+                degreeB=0;
             } else {
-                if (vect_y > 0) {
+                if (vect_yB > 0) {
                     // 0 grados NORTE
-                    Log.d("TFG_debug", "NORTE");
+                    degreeB=0;
                 } else {
-                    degreeB = 180;
                     // 180 grados SUR
-                    Log.d("TFG_debug", "SUR");
+                    degreeB = 180;
                 }
             }
-        } else if (vect_y == 0) {
-            if (vect_x > 0) {
-                degreeB = 90;
+        } else if (vect_yB == 0) {
+            if (vect_xB > 0) {
                 // 90 grados ESTE
-                Log.d("TFG_debug", "ESTE");
+                degreeB = 90;
             } else {
-                degreeB = 180;
                 // 180 grados OESTE
-                Log.d("TFG_debug", "OESTE");
+                degreeB = 270;
             }
         } else {
-            if (vect_x > 0) {
-                if (vect_y > 0) {
+            if (vect_xB > 0) {
+                if (vect_yB > 0) {
                     //NE
-                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_yB / vect_xB)));
                 } else {
                     //SE
-                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y/vect_x)));
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_yB/vect_xB)));
                     degreeB = 180 - degreeB;
                 }
             } else {
-                if (vect_y > 0) {
+                if (vect_yB > 0) {
                     //NO
-                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_yB / vect_xB)));
                     degreeB = 360 - degreeB;
                 } else {
                     //SO
-                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_yB / vect_xB)));
                     degreeB = 180 + degreeB;
                 }
             }
@@ -342,47 +341,79 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
 
         if (vect_x == 0) {
             if (vect_y == 0) {
-                //Log.d("TFG_debug", "PARADOS");
                 // 0 grados - estamos parados
+                degreeR=0;
+                if(aux_debug!=0)
+                    Log.d("TFG_debug", "RUMBO: PARADOS");
+                aux_debug=0;
             } else {
                 if (vect_y > 0) {
                     // 0 grados NORTE
-                    Log.d("TFG_debug", "NORTE");
+                    degreeR=0;
+                    if(aux_debug!=1)
+                        Log.d("TFG_debug", "RUMBO: NORTE");
+                    aux_debug=1;
                 } else {
-                    degreeB = 180;
                     // 180 grados SUR
-                    Log.d("TFG_debug", "SUR");
+                    degreeR = 180;
+                    if(aux_debug!=2)
+                        Log.d("TFG_debug", "RUMBO: SUR");
+                    aux_debug=2;
                 }
             }
         } else if (vect_y == 0) {
             if (vect_x > 0) {
-                degreeB = 90;
                 // 90 grados ESTE
-                Log.d("TFG_debug", "ESTE");
+                degreeR = 90;
+                if(aux_debug!=3)
+                    Log.d("TFG_debug", "RUMBO: ESTE");
+                aux_debug=3;
             } else {
-                degreeB = 180;
                 // 180 grados OESTE
-                Log.d("TFG_debug", "OESTE");
+                degreeR = 270;
+                if(aux_debug!=4)
+                    Log.d("TFG_debug", "RUMBO: OESTE");
+                aux_debug=4;
             }
         } else {
             if (vect_x > 0) {
                 if (vect_y > 0) {
                     //NE
-                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeR = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    if(aux_debug!=5) {
+                        Log.d("TFG_debug", "RUMBO: NORESTE");
+                        Log.d("TFG_debug", "" + degreeR);
+                    }
+                    aux_debug=5;
                 } else {
                     //SE
-                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y/vect_x)));
-                    degreeB = 180 - degreeB;
+                    degreeR = (float) Math.toDegrees(Math.atan(Math.abs(vect_y/vect_x)));
+                    degreeR = 180 - degreeR;
+                    if(aux_debug!=6) {
+                        Log.d("TFG_debug", "RUMBO: SURESTE");
+                        Log.d("TFG_debug", "" + degreeR);
+                    }
+                    aux_debug=6;
                 }
             } else {
                 if (vect_y > 0) {
                     //NO
-                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
-                    degreeB = 360 - degreeB;
+                    degreeR = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeR = 360 - degreeB;
+                    if(aux_debug!=7) {
+                        Log.d("TFG_debug", "RUMBO: NOROESTE");
+                        Log.d("TFG_debug", "" + degreeR);
+                    }
+                    aux_debug=7;
                 } else {
                     //SO
-                    degreeB = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
-                    degreeB = 180 + degreeB;
+                    degreeR = (float) Math.toDegrees(Math.atan(Math.abs(vect_y / vect_x)));
+                    degreeR = 180 + degreeR;
+                    if(aux_debug!=8) {
+                        Log.d("TFG_debug", "RUMBO: SUROESTE");
+                        Log.d("TFG_debug", "" + degreeR);
+                    }
+                    aux_debug=8;
                 }
             }
         }

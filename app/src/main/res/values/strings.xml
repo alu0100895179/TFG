@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TFG</string>
     <string name="title_activity_maps">Map</string>
@@ -8,13 +9,14 @@
     <string name="acpST">ACP</string>
     <string name="settingsST">Settings</string>
 
-    <string name="latitudeST">Latitude: </string>
-    <string name="longitudeST">Longitude: </string>
-    <string name="altitudeST">Altitude: </string>
-    <string name="bearingST">Bearing: </string>
-    <string name="speedST">Speed: </string>
-    <string name="nST">N:</string>
-    <string name="bST">B:</string>
+    <string name="latitudeST">"Latitude:\ "</string>
+    <string name="longitudeST">"Longitude:\ "</string>
+    <string name="altitudeST">"Altitude:\ "</string>
+    <string name="bearingST">"Bearing:\ "</string>
+    <string name="speedST">"Speed:\ "</string>
+    <string name="nST">"North:\ "</string>
+    <string name="bST">"Base:\ "</string>
+    <string name="rST">"Path:\ "</string>
 
     <string name="mapsDroneST">DRONE position</string>
     <string name="mapsLandST">LAND position</string>

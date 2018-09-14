@@ -68,11 +68,12 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
         bearingText = (TextView) findViewById(R.id.bearingV);
         speedText = (TextView) findViewById(R.id.speedV);
 
-        final ImageView imgCompass = findViewById(R.id.imgViewCompass);
+        final ImageView imgCompass = findViewById(R.id.imgViewArrowBlack);
         final ImageView imgCompassB = findViewById(R.id.imgViewArrowBlue);
         final ImageView imgCompassR = findViewById(R.id.imgViewArrowRed);
-        final TextView txtAngle = findViewById(R.id.txtAngle);
-        final TextView txtAngleB = findViewById(R.id.txtAngleB);
+        final TextView txtAngleV = findViewById(R.id.txtAngleV);
+        final TextView txtAngleBV = findViewById(R.id.txtAngleBV);
+        final TextView txtAngleRV = findViewById(R.id.txtAngleRV);
 
         DatabaseReference droneRef = database.getReference("GPS/drone");
         droneRef.addValueEventListener(new ValueEventListener() {
@@ -145,38 +146,46 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
         brujulaRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("TFG_debug", "UNO");
                 float degree = Float.parseFloat(dataSnapshot.child("degree").getValue().toString());
                 float currentDegree = Float.parseFloat(dataSnapshot.child("currentDegree").getValue().toString());
                 float degreeB = Float.parseFloat(dataSnapshot.child("degreeB").getValue().toString());
                 float currentDegreeB = Float.parseFloat(dataSnapshot.child("currentDegreeB").getValue().toString());
-                Log.d("TFG_debug", "DOS");
-                //txtAngle.setText("N: " + degree + "º");
-                Log.d("TFG_debug", "TRES");
+                float degreeR = Float.parseFloat(dataSnapshot.child("degreeR").getValue().toString());
+                float currentDegreeR = Float.parseFloat(dataSnapshot.child("currentDegreeR").getValue().toString());
+
+                txtAngleV.setText(""+(int) degree + " º");
                 RotateAnimation ra = new RotateAnimation(
-                        currentDegree,
                         degree,
+                        currentDegree,
                         Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF,
                         0.5f);
-                // el tiempo durante el cual la animación se llevará a cabo
-                ra.setDuration(1000);
-                // establecer la animación después del final de la estado de reserva
+
+                ra.setDuration(1500);
                 ra.setFillAfter(true);
-                // Inicio de la animacion
                 imgCompass.startAnimation(ra);
-                Log.d("TFG_debug", "CUATRO");
-                //txtAngleB.setText("B: " + (int) degreeB + "º");
+
+                txtAngleBV.setText(""+(int) degreeB + " º");
                 RotateAnimation ra2 = new RotateAnimation(
                         degreeB,
-                        degreeB,
+                        currentDegreeB,
                         Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF,
                         0.5f);
-                ra.setDuration(1000);
+                ra.setDuration(1500);
                 ra.setFillAfter(true);
                 imgCompassB.startAnimation(ra2);
-                Log.d("TFG_debug", "CINCO");
+
+                txtAngleRV.setText("" +(int) degreeR + " º");
+                RotateAnimation ra3 = new RotateAnimation(
+                        degreeR,
+                        currentDegreeR,
+                        Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f);
+                ra.setDuration(1500);
+                ra.setFillAfter(true);
+                imgCompassR.startAnimation(ra3);
             }
 
             @Override

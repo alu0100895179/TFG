@@ -11,11 +11,12 @@
 
     <string name="latitudeST">Latitud:\ "</string>
     <string name="longitudeST">"Longitud:\ "</string>
-    <string name="altitudeST">Altitud:\ </string>
-    <string name="bearingST">Orientación:\ </string>
-    <string name="speedST">Velocidad:\ </string>
-    <string name="nST">N:\ </string>
-    <string name="bST">B:\ </string>
+    <string name="altitudeST">"Altitud:\ "</string>
+    <string name="bearingST">"Orientación:\ "</string>
+    <string name="speedST">"Velocidad:\ "</string>
+    <string name="nST">"Norte:\ "</string>
+    <string name="bST">"Base:\ "</string>
+    <string name="rST">"Rumbo:\ "</string>
 
     <string name="mapsDroneST">Posición: DRONE</string>
     <string name="mapsLandST">Posición: TIERRA</string>

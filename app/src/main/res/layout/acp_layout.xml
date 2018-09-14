@@ -168,24 +168,78 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/txtAngle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/nST"
-            android:textSize="14sp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
 
-        <TextView
+            <TextView
+                android:id="@+id/txtAngle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nST"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-            android:id="@+id/txtAngleB"
+            <TextView
+                android:id="@+id/txtAngleV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/bST"
-            android:textSize="14sp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtAngleB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bST"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtAngleBV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtAngleR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rST"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtAngleRV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
 
         <Space
             android:layout_width="wrap_content"
