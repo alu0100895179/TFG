@@ -53,14 +53,15 @@ public class StreamingClass implements RtspClient.Callback, Session.Callback, Su
         mSession = SessionBuilder.getInstance()
                 .setContext(mContext)
                 .setAudioEncoder(SessionBuilder.AUDIO_NONE)
-                .setAudioQuality(new AudioQuality(8000, 16000))
                 .setVideoEncoder(SessionBuilder.VIDEO_H264)
-                //.setVideoQuality(new VideoQuality(176,144,10,200000))
-                .setVideoQuality(new VideoQuality(320, 240, 20, 500000))
+                //.setVideoQuality(new VideoQuality(352, 288, 30, 400000))
+                .setVideoQuality(new VideoQuality(176,144,10,200000))
                 .setSurfaceView(mSurfaceView)
                 .setPreviewOrientation(0)
                 .setCallback(this)
                 .build();
+                //.setAudioQuality(new AudioQuality(8000, 16000))
+                //.setVideoQuality(new VideoQuality(176,144,10,200000))
 
         mSession.setPreviewOrientation(90);
         mSession.configure();

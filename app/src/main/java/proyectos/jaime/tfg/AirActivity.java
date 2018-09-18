@@ -33,9 +33,13 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     private double vect_xB, vect_yB = 0;
     private boolean first_location = true;
 
+    // Distancias
+    private double distBase = 0;
+    private double distRec = 0;
+
     // Valores de los grados
-    private float currentDegree, currentDegreeB, currentDegreeR = 0f;
-    float degree, degreeB, degreeR = 0f;
+    float currentDegree, currentDegreeB, currentDegreeR = 0;
+    float degree, degreeB, degreeR = 0;
 
     // El sensor manager del dispositivo
     private SensorManager mSensorManager;
@@ -101,6 +105,20 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         }, 3000);
     }
 
+    public static double calcular_distancia(double lat1, double lon1, double lat2, double lon2) {
+
+        double radioTierra = 6371; //Km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lon2 - lon1);
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+        double va1 = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+        double va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1));
+
+        return ((radioTierra * va2)*1000);
+    }
+
     ///////////////////////////////////////////////////////////////////// GPS /////////////////////////////////////////////////////////////////////
     private String get_best_provider(){
         List<String> providers = new ArrayList<>();
@@ -140,6 +158,8 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         DatabaseReference bearingRef = database.getReference("GPS/drone/bearing");
         DatabaseReference speedRef = database.getReference("GPS/drone/speed");
         DatabaseReference provRef = database.getReference("GPS/drone/prov");
+        DatabaseReference distRecRef = database.getReference("GPS/distance/trailD");
+        DatabaseReference distBaseRef = database.getReference("GPS/distance/baseD");
 
 
         lat = location.getLatitude();
@@ -167,18 +187,26 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
 
             latBaseRef.setValue(latBase);
             lonBaseRef.setValue(lonBase);
+            distRecRef.setValue(0);
+            distBaseRef.setValue(0);
         }
         else{
             vect_x = lon - lon_old;
             vect_y = lat - lat_old;
+            vect_xB = lonBase - lon;
+            vect_yB = latBase - lat;
             calcular_rumbo();
+            calcular_base();
+
+            distRec = distRec + calcular_distancia(lat_old, lon_old, lat, lon);
+            distBase = calcular_distancia(lat, lon, latBase, lonBase);
+
+            distRecRef.setValue(distRec);
+            distBaseRef.setValue(distBase);
         }
 
         lat_old = lat;
         lon_old = lon;
-
-        vect_xB = lonBase - lon;
-        vect_yB = latBase - lat;
     }
 
     @Override
@@ -205,7 +233,6 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
     ////////////////////////////////////////// BRUJULA /////////////////////////////////////////////////////
     public void onSensorChanged(SensorEvent event) {
 
-        boolean envia=true;
         TextView compass_text_air = (TextView) findViewById(R.id.compass_text_air);
 
         // Comprobamos sensor activo
@@ -228,14 +255,15 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(RotationMatrix, orientation);
                 azimut = orientation[0] * (180 / (float) Math.PI);
-                degreeB = (degreeB - azimut)%360;
+                //degreeB = (degreeB - azimut)%360;
 
                 if (azimut < 0)
                     azimut = 360 + azimut;
-                calcular_base();
-                degreeB=degreeB-degree;
+                //calcular_base();
+                //degreeB=degreeB-degree;
                 if (degreeB < 0)
                     degreeB = 360 + degreeB;
+
             }
         }
         else{
@@ -245,23 +273,24 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
 
         DatabaseReference degreeRef = database.getReference("compass/degree");
         DatabaseReference currentDegreeRef = database.getReference("compass/currentDegree");
-        DatabaseReference degreeBRef = database.getReference("compass/degreeB");
+        /*DatabaseReference degreeBRef = database.getReference("compass/degreeB");
         DatabaseReference currentDegreeBRef = database.getReference("compass/currentDegreeB");
         DatabaseReference degreeRRef = database.getReference("compass/degreeR");
         DatabaseReference currentDegreeRRef = database.getReference("compass/currentDegreeR");
-
+        */
         degreeRef.setValue(degree);
         currentDegreeRef.setValue(currentDegree);
-
+        /*
         degreeBRef.setValue(degreeB);
         currentDegreeBRef.setValue(currentDegreeB);
 
         degreeRRef.setValue(degreeR);
         currentDegreeRRef.setValue(currentDegreeR);
-
-        currentDegree  = -degree;
+        */
+        currentDegree  = degree;
+        /*currentDegree  = -degree;
         currentDegreeB = -degreeB;
-        currentDegreeR = -degreeR;
+        currentDegreeR = -degreeR;*/
 
     }
 
@@ -289,7 +318,7 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
         compass_text_air.setTextColor(this.getResources().getColor(R.color.green));
     }
 
-    /////////////////////////////////////// GRADOS BASE ///////////////////////////////////////////////
+    /////////////////////////////////////// GRADOS BASE y RUMBO///////////////////////////////////////////////
     private void calcular_base (){
 
         if (vect_xB == 0) {
@@ -335,6 +364,11 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
                 }
             }
         }
+        DatabaseReference degreeBRef = database.getReference("compassB/degreeB");
+        DatabaseReference currentDegreeBRef = database.getReference("compassB/currentDegreeB");
+        degreeBRef.setValue(degreeB);
+        currentDegreeBRef.setValue(currentDegreeB);
+        currentDegreeB=degreeB;
     }
 
     private void calcular_rumbo (){
@@ -417,5 +451,10 @@ public class AirActivity extends Activity implements SensorEventListener, Locati
                 }
             }
         }
+        DatabaseReference degreeRRef = database.getReference("compassR/degreeR");
+        DatabaseReference currentDegreeRRef = database.getReference("compassR/currentDegreeR");
+        degreeRRef.setValue(degreeR);
+        currentDegreeRRef.setValue(currentDegreeR);
+        currentDegreeR=degreeR;
     }
 }

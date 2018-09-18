@@ -46,7 +46,6 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
     MapFragment mapFragment;
     GoogleMap mMap;
     boolean viendo_mapa = false;
-    float zoom=20;
 
     VideoView mVideoView;
 
@@ -60,13 +59,15 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
         mapFragment.getMapAsync(this);
         mapFragment.getView().setVisibility(View.INVISIBLE);
 
-        final TextView latText, lonText, altText, provText, bearingText, speedText;
+        final TextView latText, lonText, altText, provText, bearingText, speedText, trailText, baseText;
         latText = (TextView) findViewById(R.id.latitudeV);
         lonText = (TextView) findViewById(R.id.longitudeV);
         altText = (TextView) findViewById(R.id.altitudeV);
         provText = (TextView) findViewById(R.id.provV);
         bearingText = (TextView) findViewById(R.id.bearingV);
         speedText = (TextView) findViewById(R.id.speedV);
+        trailText = (TextView) findViewById(R.id.trailV);
+        baseText = (TextView) findViewById(R.id.baseV);
 
         final ImageView imgCompass = findViewById(R.id.imgViewArrowBlack);
         final ImageView imgCompassB = findViewById(R.id.imgViewArrowBlue);
@@ -110,7 +111,7 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
 
                 latText.setText(latitudeS);
                 lonText.setText(longitudeS);
-                altText.setText(dec2.format(alt) + "m");
+                altText.setText(dec2.format(alt) + " m");
                 bearingText.setText(""+ dec2.format(bearing) + " º");
                 speedText.setText("" + dec2.format(speed) + " m/s");
 
@@ -142,59 +143,6 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
             }
         });
 
-        DatabaseReference brujulaRef = database.getReference("compass");
-        brujulaRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                float degree = Float.parseFloat(dataSnapshot.child("degree").getValue().toString());
-                float currentDegree = Float.parseFloat(dataSnapshot.child("currentDegree").getValue().toString());
-                float degreeB = Float.parseFloat(dataSnapshot.child("degreeB").getValue().toString());
-                float currentDegreeB = Float.parseFloat(dataSnapshot.child("currentDegreeB").getValue().toString());
-                float degreeR = Float.parseFloat(dataSnapshot.child("degreeR").getValue().toString());
-                float currentDegreeR = Float.parseFloat(dataSnapshot.child("currentDegreeR").getValue().toString());
-
-                txtAngleV.setText(""+(int) degree + " º");
-                RotateAnimation ra = new RotateAnimation(
-                        degree,
-                        currentDegree,
-                        Animation.RELATIVE_TO_SELF, 0.5f,
-                        Animation.RELATIVE_TO_SELF,
-                        0.5f);
-
-                ra.setDuration(1500);
-                ra.setFillAfter(true);
-                imgCompass.startAnimation(ra);
-
-                txtAngleBV.setText(""+(int) degreeB + " º");
-                RotateAnimation ra2 = new RotateAnimation(
-                        degreeB,
-                        currentDegreeB,
-                        Animation.RELATIVE_TO_SELF, 0.5f,
-                        Animation.RELATIVE_TO_SELF,
-                        0.5f);
-                ra.setDuration(1500);
-                ra.setFillAfter(true);
-                imgCompassB.startAnimation(ra2);
-
-                txtAngleRV.setText("" +(int) degreeR + " º");
-                RotateAnimation ra3 = new RotateAnimation(
-                        degreeR,
-                        currentDegreeR,
-                        Animation.RELATIVE_TO_SELF, 0.5f,
-                        Animation.RELATIVE_TO_SELF,
-                        0.5f);
-                ra.setDuration(1500);
-                ra.setFillAfter(true);
-                imgCompassR.startAnimation(ra3);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("TFG_debug", "Failed to read value.", error.toException());
-            }
-        });
-
         DatabaseReference baseRef = database.getReference("GPS/base");
         baseRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -216,7 +164,6 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
             }
         });
 
-
         DatabaseReference landRef = database.getReference("GPS/land");
         landRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -228,13 +175,111 @@ public class AcpActivity  extends Activity implements  OnMapReadyCallback{
                 if (viendo_mapa){
                     actualiza_mapa(-1);
                 }
-
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
                 Log.d("TFG_debug", "Failed to read value.", error.toException());
+            }
+        });
+
+        DatabaseReference distanceRef = database.getReference("GPS/distance");
+        distanceRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                double trailD = Double.parseDouble(dataSnapshot.child("trailD").getValue().toString());
+                double baseD = Double.parseDouble(dataSnapshot.child("baseD").getValue().toString());
+
+                trailText.setText("" + dec2.format(trailD) + " m");
+                baseText.setText("" + dec2.format(baseD) + " m");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.d("TFG_debug", "Failed to read value.", error.toException());
+            }
+        });
+
+        DatabaseReference brujulaRef = database.getReference("compass");
+        brujulaRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float degree = Float.parseFloat(dataSnapshot.child("degree").getValue().toString());
+                float currentDegree = Float.parseFloat(dataSnapshot.child("currentDegree").getValue().toString());
+
+                txtAngleV.setText(""+(int) degree + " º");
+                RotateAnimation ra = new RotateAnimation(
+                        degree,
+                        currentDegree,
+                        Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f);
+
+                ra.setDuration(1500);
+                ra.setFillAfter(true);
+                imgCompass.startAnimation(ra);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("TFG_debug", "Failed to read value.", error.toException());
+            }
+        });
+
+        DatabaseReference brujulaBRef = database.getReference("compassB");
+        brujulaBRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float degreeB = Float.parseFloat(dataSnapshot.child("degreeB").getValue().toString());
+                float currentDegreeB = Float.parseFloat(dataSnapshot.child("currentDegreeB").getValue().toString());
+
+                txtAngleBV.setText(""+(int) degreeB + " º");
+                RotateAnimation ra2 = new RotateAnimation(
+                        currentDegreeB,
+                        degreeB,
+                        Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f);
+                ra2.setDuration(1500);
+                ra2.setFillAfter(true);
+                imgCompassB.startAnimation(ra2);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("TFG_debug", "Failed to read value.", error.toException());
+            }
+        });
+
+        DatabaseReference brujulaRRef = database.getReference("compassR");
+        brujulaRRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float degreeR = Float.parseFloat(dataSnapshot.child("degreeR").getValue().toString());
+                float currentDegreeR = Float.parseFloat(dataSnapshot.child("currentDegreeR").getValue().toString());
+
+                txtAngleRV.setText("" +(int) degreeR + " º");
+                RotateAnimation ra3 = new RotateAnimation(
+                        currentDegreeR,
+                        degreeR,
+                        Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f);
+                ra3.setDuration(1500);
+                ra3.setFillAfter(true);
+                imgCompassR.startAnimation(ra3);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("TFG_debug", "Failed to read value.", error.toException());
             }
         });
 

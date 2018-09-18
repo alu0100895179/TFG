@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 public class ConfigActivity extends Activity {
 
-    public static String STREAM_URL_AIR = "rtsp://192.168.1.34:1935/casus/android_air";
-    public static String STREAM_URL_LAND = "rtsp://192.168.1.34:1935/casus/android_land";
+    //public static String STREAM_URL_AIR = "rtsp://192.168.1.34:1935/casus/android_air";
+    //public static String STREAM_URL_LAND = "rtsp://192.168.1.34:1935/casus/android_land";
+    public static String STREAM_URL_AIR = "rtsp://casustfg.duckdns.org:1935/casus/android_air";
+    public static String STREAM_URL_LAND = "rtsp://casustfg.duckdns.org:1935/casus/android_land";
 
     public static final String PUBLISHER_USERNAME = "casus";
     public static final String PUBLISHER_PASSWORD = "Casus_";

@@ -9,11 +9,14 @@
     <string name="acpST">PMA</string>
     <string name="settingsST">Configuración</string>
 
+    <string name="compassST">Brújula</string>
     <string name="latitudeST">Latitud:\ "</string>
     <string name="longitudeST">"Longitud:\ "</string>
     <string name="altitudeST">"Altitud:\ "</string>
     <string name="bearingST">"Orientación:\ "</string>
     <string name="speedST">"Velocidad:\ "</string>
+    <string name="trailST">"Recorrido:\ "</string>
+    <string name="baseST">"Base:\ "</string>
     <string name="nST">"Norte:\ "</string>
     <string name="bST">"Base:\ "</string>
     <string name="rST">"Rumbo:\ "</string>
